@@ -10,6 +10,7 @@ import userRoutes from './routes/user';
 import projectsRoutes from './routes/projects';
 import messagesRoutes from './routes/messages';
 import searchRoutes from './routes/search';
+import notificationsRoutes from './routes/notifications';
 
 const app = express();
 const httpServer = createServer(app);
@@ -47,6 +48,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/projects', projectsRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/notifications', notificationsRoutes);
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
