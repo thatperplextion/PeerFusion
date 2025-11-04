@@ -72,82 +72,77 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8 transition-colors duration-200">
+    <div className="min-h-screen bg-background flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">P</span>
+          <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold text-2xl">P</span>
           </div>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+        <h2 className="mt-6 text-center text-3xl font-bold text-foreground">
           Create your account
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-2 text-center text-sm text-muted-foreground">
           Or{' '}
-          <Link href="/login" className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300">
+          <Link href="/login" className="font-medium text-primary hover:opacity-90 transition-smooth">
             sign in to your existing account
           </Link>
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10 transition-colors duration-200">
+        <div className="bg-card py-8 px-4 shadow-lg sm:rounded-xl sm:px-10 border border-border">
           <form onSubmit={handleRegister} className="space-y-6">
             {error && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-md text-sm">
+              <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg text-sm">
                 {error}
               </div>
             )}
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label htmlFor="first_name" className="block text-sm font-medium text-foreground mb-2">
                   First name
                 </label>
-                <div className="mt-1">
-                  <input
-                    id="first_name"
-                    name="first_name"
-                    type="text"
-                    autoComplete="given-name"
-                    required
-                    value={form.first_name}
-                    onChange={handleChange}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200"
-                    placeholder="Enter your first name"
-                  />
-                </div>
+                <input
+                  id="first_name"
+                  name="first_name"
+                  type="text"
+                  autoComplete="given-name"
+                  required
+                  value={form.first_name}
+                  onChange={handleChange}
+                  className="input w-full"
+                  placeholder="Enter your first name"
+                />
               </div>
 
               <div>
-                <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label htmlFor="last_name" className="block text-sm font-medium text-foreground mb-2">
                   Last name
                 </label>
-                <div className="mt-1">
-                  <input
-                    id="last_name"
-                    name="last_name"
-                    type="text"
-                    autoComplete="family-name"
-                    required
-                    value={form.last_name}
-                    onChange={handleChange}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200"
-                    placeholder="Enter your last name"
-                  />
-                </div>
+                <input
+                  id="last_name"
+                  name="last_name"
+                  type="text"
+                  autoComplete="family-name"
+                  required
+                  value={form.last_name}
+                  onChange={handleChange}
+                  className="input w-full"
+                  placeholder="Enter your last name"
+                />
               </div>
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
                 Email address
               </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
+              <input
+                id="email"
+                name="email"
+                type="email"
                   autoComplete="email"
                   required
                   value={form.email}
