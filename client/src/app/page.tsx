@@ -120,18 +120,18 @@ export default function Home() {
               <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
                 2
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Connect & Collaborate</h3>
-              <p className="text-gray-600 dark:text-gray-300 transition-colors duration-300">
+              <h3 className="text-xl font-semibold text-foreground mb-2">Connect & Collaborate</h3>
+              <p className="text-muted-foreground">
                 Find like-minded individuals, join research groups, and start collaborative projects
               </p>
             </div>
             
             <div className="text-center">
-              <div className="w-12 h-12 bg-blue-600 dark:bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold transition-colors duration-300">
+              <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
                 3
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Share & Grow</h3>
-              <p className="text-gray-600 dark:text-gray-300 transition-colors duration-300">
+              <h3 className="text-xl font-semibold text-foreground mb-2">Share & Grow</h3>
+              <p className="text-muted-foreground">
                 Share your knowledge, learn from others, and advance your academic career
               </p>
             </div>
@@ -140,21 +140,21 @@ export default function Home() {
       </section>
 
       {/* Theme Showcase Section */}
-      <section className="py-20 bg-white dark:bg-gray-800 transition-colors duration-300">
+      <section className="py-20 bg-card border-y border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-300">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
               Beautiful in Every Theme
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto transition-colors duration-300">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Experience PeerFusion in light, dark, or system theme - all with smooth transitions
             </p>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="card p-6 transition-all duration-300 hover:shadow-lg">
-              <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-background border border-border rounded-lg p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/50">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               </div>
