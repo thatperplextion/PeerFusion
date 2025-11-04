@@ -18,12 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className="min-h-screen bg-background text-foreground antialiased">
         <ThemeProvider>
           <AuthProvider>
             <SocketProvider>
               <Header />
-              <main>{children}</main>
+              <main className="bg-background">{children}</main>
             </SocketProvider>
           </AuthProvider>
         </ThemeProvider>
