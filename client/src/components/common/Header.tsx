@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import ChatButton from "@/components/chat/ChatButton";
 import ThemeToggle from "./ThemeToggle";
+import NotificationBell from "./NotificationBell";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -47,6 +48,7 @@ export default function Header() {
             <ThemeToggle />
             {user ? (
               <>
+                <NotificationBell />
                 <ChatButton />
                 <div className="relative">
                   <button

@@ -34,7 +34,7 @@ router.get('/unread-count', authenticateToken, async (req, res) => {
       [userId]
     );
     
-    res.json({ count: result.rows[0].count });
+    res.json({ count: (result.rows[0] as any).count });
   } catch (err) {
     console.error('Error fetching unread count:', err);
     res.status(500).json({ error: 'Failed to fetch unread count' });
