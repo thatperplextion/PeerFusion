@@ -38,6 +38,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log("🔐 Checking for existing token:", !!token);
         
         if (token) {
+          // Try to get cached user data first for instant loading
+          const cachedUser = localStorage.getItem("user");
+          if (cachedUser) {
+            try {
+              setUser(JSON.parse(cachedUser));
+              console.log("💾 Loaded user from cache");
+            } catch (e) {
+              console.warn("⚠️ Failed to parse cached user");
+            }
+          }
+
           console.log("📡 Fetching user data...");
           const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/auth/me`;
           
@@ -51,19 +62,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.log("🌐 Auth response status:", response.status);
           
           if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            // Only clear token if it's actually invalid (401/403)
+            // Don't clear on network errors or server issues (500, etc.)
+            if (response.status === 401 || response.status === 403) {
+              console.error("❌ Token is invalid or expired");
+              localStorage.removeItem("token");
+              setUser(null);
+            } else {
+              console.warn("⚠️ Server error, keeping token:", response.status);
+              // Keep the user logged in, they can try again
+            }
+          } else {
+            const userData = await response.json();
+            console.log("✅ User data received:", userData);
+            setUser(userData);
+            // Cache user data for instant loading on refresh
+            localStorage.setItem("user", JSON.stringify(userData));
           }
-          
-          const userData = await response.json();
-          console.log("✅ User data received:", userData);
-          setUser(userData);
         } else {
           console.log("❌ No token found");
         }
       } catch (error) {
         console.error("❌ Auth initialization error:", error);
-        localStorage.removeItem("token");
-        setUser(null);
+        // Don't remove token on network errors - keep user logged in
+        console.warn("⚠️ Network error during auth check, keeping user session");
       } finally {
         setLoading(false);
         console.log("🏁 Auth initialization complete");
@@ -77,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log("🔑 Logging in user:", userData.email);
       localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
       console.log("✅ Login successful");
     } catch (error) {
@@ -87,6 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     console.log("🚪 Logging out user");
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
     router.push("/login");
   };
