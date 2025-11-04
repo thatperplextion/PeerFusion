@@ -42,7 +42,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     }
 
     // Create socket connection
-    const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050', {
+    const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051', {
       auth: {
         token: localStorage.getItem('token')
       }
@@ -75,7 +75,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     return () => {
       newSocket.disconnect();
     };
-  }, [isAuthenticated, user, socket]);
+  }, [isAuthenticated, user?.id]);
 
   const sendMessage = (receiverId: number, message: string) => {
     if (socket && isConnected) {

@@ -18,6 +18,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  isAuthenticated: boolean;
   login: (token: string, userData: User) => void;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
@@ -38,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         if (token) {
           console.log("📡 Fetching user data...");
-          const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/api/auth/me`;
+          const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/auth/me`;
           
           const response = await fetch(apiUrl, {
             headers: { 
@@ -97,8 +98,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const isAuthenticated = !!user;
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, isAuthenticated, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

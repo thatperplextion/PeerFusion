@@ -4,21 +4,29 @@ import { testDatabaseConnection } from './db';
 
 const PORT = process.env.PORT || 5050;
 
-// Test database connection before starting server
+// Test database connection before starting server (can be skipped with SKIP_DB_TEST=true)
 const startServer = async () => {
   try {
-    console.log('🔄 Testing database connection...');
-    const dbConnected = await testDatabaseConnection();
-    
-    if (!dbConnected) {
-      console.warn('⚠️  Database connection failed. Server will start without database support.');
-      console.log('💡 To enable database features, please:');
-      console.log('   1. Install PostgreSQL');
-      console.log('   2. Create a .env file with database credentials');
-      console.log('   3. Create the database and user');
-      console.log('   4. Restart the server');
+    const skipDbTest = String(process.env.SKIP_DB_TEST || '').toLowerCase() === 'true';
+
+    let dbConnected = false;
+
+    if (skipDbTest) {
+      console.log('ℹ️  SKIP_DB_TEST=true — skipping database connectivity test. Server will start in degraded mode if DB is down.');
     } else {
-      console.log('✅ Database connection successful');
+      console.log('🔄 Testing database connection...');
+      dbConnected = await testDatabaseConnection();
+
+      if (!dbConnected) {
+        console.warn('⚠️  Database connection failed. Server will start without database support.');
+        console.log('💡 To enable database features, please:');
+        console.log('   1. Install PostgreSQL');
+        console.log('   2. Create a .env file with database credentials');
+        console.log('   3. Create the database and user');
+        console.log('   4. Restart the server');
+      } else {
+        console.log('✅ Database connection successful');
+      }
     }
 
     const server = httpServer.listen(PORT, () => {

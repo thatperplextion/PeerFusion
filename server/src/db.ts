@@ -1,52 +1,68 @@
 // server/src/db.ts - Fix database connection with proper error handling
-import { Pool } from 'pg';
+import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Check if required environment variables are set
+// Check env vars (MySQL defaults)
 const requiredEnvVars = ['DB_USER', 'DB_HOST', 'DB_NAME', 'DB_PASSWORD', 'DB_PORT'];
 const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
-
 if (missingEnvVars.length > 0) {
   console.warn('⚠️  Missing database environment variables:', missingEnvVars.join(', '));
   console.log('💡 Create a .env file with the following variables:');
   console.log('   DB_USER=your_db_user');
-  console.log('   DB_HOST=localhost');
+  console.log('   DB_HOST=127.0.0.1');
   console.log('   DB_NAME=your_db_name');
   console.log('   DB_PASSWORD=your_db_password');
-  console.log('   DB_PORT=5432');
+  console.log('   DB_PORT=3306');
 }
 
-export const pool = new Pool({
+const poolInstance = mysql.createPool({
+  host: process.env.DB_HOST || '127.0.0.1',
   user: process.env.DB_USER || 'peerfusion_user',
-  host: process.env.DB_HOST || 'localhost',
   database: process.env.DB_NAME || 'peerfusion_db',
   password: process.env.DB_PASSWORD || 'peerfusion_password',
-  port: Number(process.env.DB_PORT) || 5432,
-  // Add connection pool settings
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  port: Number(process.env.DB_PORT) || 3306,
+  waitForConnections: true,
+  connectionLimit: Number(process.env.DB_CONN_LIMIT) || 10,
+  queueLimit: 0,
 });
 
-// Remove process.exit and improve error handling
-pool.on('connect', () => {
-  console.log('✅ Connected to PostgreSQL database');
-});
+// Adapter: convert Postgres-style $1, $2 params to MySQL ? placeholders
+function convertPgParamsToMysql(sql: string) {
+  return sql.replace(/\$[0-9]+/g, '?');
+}
 
-pool.on('error', (err) => {
-  console.error('❌ Database connection error:', err.message);
-  // Don't exit the process - just log the error
-});
+export const pool = {
+  // Keep a compatible API: pool.query(sql, params) -> { rows }
+  query: async (sql: string, params?: any[]) => {
+    const transformedSql = convertPgParamsToMysql(sql);
+    try {
+      const [rowsOrOk] = await poolInstance.query(transformedSql, params || []);
 
-// Test the connection on startup
+      // SELECT queries return array rows; INSERT/UPDATE return OkPacket object
+      if (Array.isArray(rowsOrOk)) {
+        return { rows: rowsOrOk };
+      }
+
+      // OkPacket (for inserts/updates)
+      const ok: any = rowsOrOk;
+      return { rows: [], insertId: ok.insertId, affectedRows: ok.affectedRows };
+    } catch (err: any) {
+      // Re-throw to be handled by callers
+      throw err;
+    }
+  },
+  // expose end for graceful shutdown
+  end: async () => poolInstance.end(),
+  // raw pool instance if needed
+  _raw: poolInstance,
+};
+
 export const testDatabaseConnection = async () => {
   try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT NOW()');
-    console.log('✅ Database connection test successful');
-    client.release();
+    const [rows] = await poolInstance.query('SELECT 1');
+    console.log('✅ Database connection test successful (MySQL)');
     return true;
   } catch (error) {
     console.error('❌ Database connection test failed:', error);
@@ -55,16 +71,20 @@ export const testDatabaseConnection = async () => {
 };
 
 // Graceful shutdown
-process.on('SIGINT', () => {
-  pool.end(() => {
+process.on('SIGINT', async () => {
+  try {
+    await poolInstance.end();
     console.log('Database pool has ended');
+  } finally {
     process.exit(0);
-  });
+  }
 });
 
-process.on('SIGTERM', () => {
-  pool.end(() => {
+process.on('SIGTERM', async () => {
+  try {
+    await poolInstance.end();
     console.log('Database pool has ended');
+  } finally {
     process.exit(0);
-  });
+  }
 });

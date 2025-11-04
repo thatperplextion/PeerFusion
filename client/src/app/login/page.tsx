@@ -1,7 +1,7 @@
 // src/app/login/page.tsx - Fix client-side login with better error handling
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -11,8 +11,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, router]);
 
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -23,7 +29,7 @@ export default function LoginPage() {
     try {
       console.log("🔄 Attempting login for:", email);
       
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/api/auth/login`;
+  const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/auth/login`;
       console.log("📡 API URL:", apiUrl);
 
       const res = await fetch(apiUrl, {

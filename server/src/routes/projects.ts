@@ -9,11 +9,13 @@ router.post('/', authenticateToken, async (req, res) => {
   const { title, description, link } = req.body;
   const userId = (req as any).user.id;
   try {
-    const result = await pool.query(
-      'INSERT INTO projects (user_id, title, description, link) VALUES ($1, $2, $3, $4) RETURNING *',
+    const insertResult = await pool.query(
+      'INSERT INTO projects (user_id, title, description, link) VALUES (?, ?, ?, ?)',
       [userId, title, description, link]
     );
-    res.status(201).json(result.rows[0]);
+    const insertedId = insertResult.insertId;
+    const fetched = await pool.query('SELECT * FROM projects WHERE id = ?', [insertedId]);
+    res.status(201).json(fetched.rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to add project' });
@@ -24,7 +26,7 @@ router.post('/', authenticateToken, async (req, res) => {
 router.get('/', authenticateToken, async (req, res) => {
   const userId = (req as any).user.id;
   try {
-    const result = await pool.query('SELECT * FROM projects WHERE user_id = $1', [userId]);
+    const result = await pool.query('SELECT * FROM projects WHERE user_id = ?', [userId]);
     res.json(result.rows);
   } catch (err) {
     console.error(err);

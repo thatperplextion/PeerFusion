@@ -42,7 +42,7 @@ router.post('/register', async (req: Request, res: Response) => {
 
     // Check if user already exists
     const existingUser = await withDatabase(async () => 
-      pool.query('SELECT id FROM users WHERE email = $1', [email])
+      pool.query('SELECT id FROM users WHERE email = ?', [email])
     );
 
     if (existingUser.rows.length > 0) {
@@ -55,17 +55,21 @@ router.post('/register', async (req: Request, res: Response) => {
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Insert new user
-    const result = await withDatabase(async () =>
+    // Insert new user (MySQL: no RETURNING) then fetch inserted row
+    const insertResult = await withDatabase(async () =>
       pool.query(
         `INSERT INTO users (first_name, last_name, email, password_hash, created_at) 
-         VALUES ($1, $2, $3, $4, NOW()) 
-         RETURNING id, email, first_name, last_name, created_at`,
+         VALUES (?, ?, ?, ?, NOW())`,
         [first_name, last_name, email, hashedPassword]
       )
     );
 
-    const user = result.rows[0];
+    const insertedId = insertResult.insertId;
+    const fetched = await withDatabase(async () =>
+      pool.query('SELECT id, email, first_name, last_name, created_at FROM users WHERE id = ?', [insertedId])
+    );
+
+  const user = fetched.rows[0] as any;
     const token = createToken(user.id);
 
     console.log(`✅ User registered successfully: ${email}`);
@@ -113,7 +117,7 @@ router.post('/login', async (req: Request, res: Response) => {
     // Find user by email
     const result = await withDatabase(async () =>
       pool.query(
-        'SELECT id, email, first_name, last_name, password_hash FROM users WHERE email = $1',
+        'SELECT id, email, first_name, last_name, password_hash FROM users WHERE email = ?',
         [email]
       )
     );
@@ -125,7 +129,7 @@ router.post('/login', async (req: Request, res: Response) => {
       });
     }
 
-    const user = result.rows[0];
+  const user = result.rows[0] as any;
 
     // Compare password
     const isMatch = await bcrypt.compare(password, user.password_hash);
@@ -176,7 +180,7 @@ router.get('/me', authenticateToken, async (req: Request, res: Response) => {
     const result = await withDatabase(async () =>
       pool.query(
         `SELECT id, email, first_name, last_name, bio, institution, field_of_study, created_at 
-         FROM users WHERE id = $1`,
+         FROM users WHERE id = ?`,
         [userId]
       )
     );
