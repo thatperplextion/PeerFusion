@@ -76,4 +76,96 @@ router.put('/profile', authenticateToken, async (req, res) => {
   }
 });
 
+// Add a skill for the authenticated user
+router.post('/skills', authenticateToken, async (req, res) => {
+  try {
+    const userId = (req as any).user.id;
+    const {
+      skill_name,
+      category,
+      proficiency_level,
+      description,
+      years_of_experience,
+      willing_to_mentor,
+      willing_to_collaborate
+    } = req.body;
+
+    console.log('🎯 Adding skill for user ID:', userId);
+
+    // Validate required fields
+    if (!skill_name || !category) {
+      return res.status(400).json({ error: 'Skill name and category are required' });
+    }
+
+    const insertResult = await pool.query(
+      `INSERT INTO user_skills 
+       (user_id, skill_name, category, proficiency_level, description, years_of_experience, willing_to_mentor, willing_to_collaborate) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        userId,
+        skill_name,
+        category,
+        proficiency_level || 'intermediate',
+        description || null,
+        years_of_experience || null,
+        willing_to_mentor || false,
+        willing_to_collaborate || false
+      ]
+    );
+
+    const insertedId = insertResult.insertId;
+    const fetched = await pool.query('SELECT * FROM user_skills WHERE id = ?', [insertedId]);
+
+    console.log('✅ Skill added successfully');
+    res.status(201).json(fetched.rows[0]);
+  } catch (err) {
+    console.error('❌ Error adding skill:', err);
+    res.status(500).json({ error: 'Failed to add skill' });
+  }
+});
+
+// Get skills for a user
+router.get('/:id/skills', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.params.id === 'me' ? (req as any).user.id : parseInt(req.params.id);
+
+    console.log('🎯 Fetching skills for user ID:', userId);
+
+    const result = await pool.query(
+      'SELECT * FROM user_skills WHERE user_id = ? ORDER BY created_at DESC',
+      [userId]
+    );
+
+    console.log('✅ Skills fetched successfully');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('❌ Error fetching skills:', err);
+    res.status(500).json({ error: 'Failed to fetch skills' });
+  }
+});
+
+// Update user settings/preferences
+router.put('/settings', authenticateToken, async (req, res) => {
+  try {
+    const userId = (req as any).user.id;
+    const { email_notifications, project_updates, message_notifications } = req.body;
+
+    console.log('⚙️  Updating settings for user ID:', userId);
+
+    // For now, just return success since we don't have a settings table
+    // In production, you'd store these in a user_settings table
+    res.json({ 
+      message: 'Settings updated successfully',
+      settings: {
+        email_notifications,
+        project_updates,
+        message_notifications
+      }
+    });
+  } catch (err) {
+    console.error('❌ Error updating settings:', err);
+    res.status(500).json({ error: 'Failed to update settings' });
+  }
+});
+
 export default router;

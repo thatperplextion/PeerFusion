@@ -34,19 +34,50 @@ export default function SearchPage() {
     
     setSearching(true);
     try {
-      // TODO: Implement actual API search
-      // const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/search?q=${searchQuery}&type=${searchType}`, {
-      //   headers: {
-      //     'Authorization': `Bearer ${localStorage.getItem('token')}`
-      //   }
-      // });
-      // const data = await response.json();
-      // setSearchResults(data);
+      const token = localStorage.getItem('token');
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/search?q=${encodeURIComponent(searchQuery)}&type=${searchType}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
       
-      // Mock results for now
-      setSearchResults([]);
+      if (!response.ok) {
+        throw new Error('Search failed');
+      }
+      
+      const data = await response.json();
+      
+      // Transform backend data to match frontend interface
+      const results: SearchResult[] = [];
+      
+      if (searchType === 'users' && data.users) {
+        results.push(...data.users.map((user: any) => ({
+          id: user.id,
+          type: 'user' as const,
+          name: `${user.first_name} ${user.last_name}`,
+          description: user.bio || user.institution || 'No bio available',
+          avatar: user.avatar
+        })));
+      }
+      
+      if (searchType === 'projects' && data.projects) {
+        results.push(...data.projects.map((project: any) => ({
+          id: project.id,
+          type: 'project' as const,
+          name: project.title,
+          description: project.description,
+          owner: `${project.first_name} ${project.last_name}`
+        })));
+      }
+      
+      setSearchResults(results);
     } catch (error) {
       console.error("Search error:", error);
+      setSearchResults([]);
     } finally {
       setSearching(false);
     }

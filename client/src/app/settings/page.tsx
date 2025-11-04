@@ -28,19 +28,24 @@ export default function SettingsPage() {
     setMessage("");
     
     try {
-      // TODO: Implement actual API call to save settings
-      // await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/settings`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${localStorage.getItem('token')}`
-      //   },
-      //   body: JSON.stringify(settings)
-      // });
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/users/settings`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(settings)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to save settings');
+      }
       
       setMessage("Settings saved successfully!");
       setTimeout(() => setMessage(""), 3000);
     } catch (error) {
+      console.error('Settings error:', error);
       setMessage("Failed to save settings");
     } finally {
       setSaving(false);

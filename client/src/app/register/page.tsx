@@ -33,13 +33,20 @@ export default function RegisterPage() {
     setError("");
 
     try {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/auth/register`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051';
+      console.log('Registering with API:', apiUrl);
+      console.log('Form data:', form);
+      
+      const res = await fetch(`${apiUrl}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
       
+      console.log('Response status:', res.status);
+      
       const data = await res.json();
+      console.log('Response data:', data);
       
       if (!res.ok) {
         setError(data.error || "Registration failed");
@@ -48,15 +55,17 @@ export default function RegisterPage() {
 
       // If registration is successful and includes a token, log the user in
       if (data.token && data.user) {
+        console.log('Registration successful, logging in...');
         login(data.token, data.user);
         router.push("/dashboard");
       } else {
         // If no token, redirect to login
+        console.log('No token received, redirecting to login');
         router.push("/login");
       }
-    } catch (err) {
-      setError("An error occurred during registration. Please try again.");
+    } catch (err: any) {
       console.error("Registration error:", err);
+      setError(`An error occurred during registration: ${err.message || 'Please try again.'}`);
     } finally {
       setLoading(false);
     }
@@ -85,7 +94,7 @@ export default function RegisterPage() {
         <div className="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10 transition-colors duration-200">
           <form onSubmit={handleRegister} className="space-y-6">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-md text-sm">
                 {error}
               </div>
             )}

@@ -9,6 +9,7 @@ import { authenticateToken } from './middleware/authMiddleware';
 import userRoutes from './routes/user';
 import projectsRoutes from './routes/projects';
 import messagesRoutes from './routes/messages';
+import searchRoutes from './routes/search';
 
 const app = express();
 const httpServer = createServer(app);
@@ -45,6 +46,7 @@ app.get('/api/protected', authenticateToken, (req, res) => {
 app.use('/api/users', userRoutes);
 app.use('/api/projects', projectsRoutes);
 app.use('/api/messages', messagesRoutes);
+app.use('/api/search', searchRoutes);
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {

@@ -6,18 +6,28 @@ const router = Router();
 
 // Create project
 router.post('/', authenticateToken, async (req, res) => {
-  const { title, description, link } = req.body;
+  const { title, description, link, status } = req.body;
   const userId = (req as any).user.id;
+  
+  // Validate required fields
+  if (!title || !description) {
+    return res.status(400).json({ error: 'Title and description are required' });
+  }
+  
+  // Validate status if provided
+  const validStatuses = ['seeking', 'active', 'completed'];
+  const projectStatus = status && validStatuses.includes(status) ? status : 'seeking';
+  
   try {
     const insertResult = await pool.query(
-      'INSERT INTO projects (user_id, title, description, link) VALUES (?, ?, ?, ?)',
-      [userId, title, description, link]
+      'INSERT INTO projects (user_id, title, description, link, status) VALUES (?, ?, ?, ?, ?)',
+      [userId, title, description, link || null, projectStatus]
     );
     const insertedId = insertResult.insertId;
     const fetched = await pool.query('SELECT * FROM projects WHERE id = ?', [insertedId]);
     res.status(201).json(fetched.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error('Error creating project:', err);
     res.status(500).json({ error: 'Failed to add project' });
   }
 });
