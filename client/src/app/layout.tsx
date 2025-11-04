@@ -23,7 +23,7 @@ export default function RootLayout({
           <AuthProvider>
             <SocketProvider>
               <Header />
-              <main className="bg-background" style={{ paddingTop: '64px' }}>{children}</main>
+              <main className="bg-background" style={{ paddingTop: '80px', minHeight: 'calc(100vh - 80px)' }}>{children}</main>
             </SocketProvider>
           </AuthProvider>
         </ThemeProvider>

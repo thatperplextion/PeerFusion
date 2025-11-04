@@ -72,14 +72,14 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background flex flex-col justify-center py-8 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
+        <div className="flex justify-center animate-fade-in">
           <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
             <span className="text-white font-bold text-2xl">P</span>
           </div>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-bold text-foreground">
+        <h2 className="mt-6 text-center text-3xl font-bold text-foreground animate-slide-in">
           Create your account
         </h2>
         <p className="mt-2 text-center text-sm text-muted-foreground">
@@ -143,43 +143,43 @@ export default function RegisterPage() {
                 id="email"
                 name="email"
                 type="email"
-                  autoComplete="email"
-                  required
-                  value={form.email}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200"
-                  placeholder="Enter your email"
-                />
-              </div>
+                autoComplete="email"
+                required
+                value={form.email}
+                onChange={handleChange}
+                className="input w-full"
+                placeholder="Enter your email"
+              />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
                 Password
               </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                  value={form.password}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200"
-                  placeholder="Create a password"
-                />
-              </div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="new-password"
+                required
+                value={form.password}
+                onChange={handleChange}
+                className="input w-full"
+                placeholder="Create a password"
+              />
             </div>
 
             <div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn btn-primary w-full justify-center py-3 text-base font-semibold"
               >
                 {loading ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="spinner"></div>
+                    <span>Creating account...</span>
+                  </div>
                 ) : (
                   'Create Account'
                 )}
