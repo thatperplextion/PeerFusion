@@ -80,45 +80,68 @@ export default function Dashboard() {
     }
   }, [isAuthenticated]);
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
   if (loading) return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <div className="flex flex-col items-center gap-4">
+        <div className="spinner w-12 h-12 border-4"></div>
+        <p className="text-muted-foreground animate-pulse">Loading your dashboard...</p>
+      </div>
     </div>
   );
 
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8 transition-colors duration-200">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-200">
-            Welcome back, {user.first_name}! 👋
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300 transition-colors duration-200">
-            Ready to collaborate on research and share your skills? Here's what's happening in your network.
-          </p>
+        {/* Welcome Section with Animation */}
+        <div className="card mb-8 animate-fade-in hover:shadow-lg transition-smooth">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                {getGreeting()}, {user.first_name}! 👋
+              </h1>
+              <p className="text-muted-foreground">
+                Ready to collaborate on research and share your skills? Here's what's happening in your network.
+              </p>
+            </div>
+            <Link
+              href="/projects/new"
+              className="btn btn-primary hidden md:inline-flex"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              New Project
+            </Link>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content - Projects Feed */}
           <div className="lg:col-span-2 space-y-6">
             {/* Quick Actions */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-200">Quick Actions</h2>
+            <div className="card animate-slide-in">
+              <h2 className="text-xl font-semibold text-foreground mb-4">Quick Actions</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Link
                   href="/projects/new"
-                  className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors group"
+                  className="flex items-center justify-center p-4 border-2 border-dashed border-border rounded-lg hover:border-primary hover:bg-muted transition-smooth group"
                 >
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/50 transition-colors">
-                      <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:bg-primary/20 transition-smooth">
+                      <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
                     </div>
-                    <span className="font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors duration-200">Create Project</span>
+                    <span className="font-medium text-foreground group-hover:text-primary transition-smooth">Create Project</span>
                   </div>
                 </Link>
                 <Link
