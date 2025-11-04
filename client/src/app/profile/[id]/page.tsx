@@ -1,4 +1,4 @@
-"use client";
+                                                                                                                                                                                                                            "use client";
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -450,9 +450,6 @@ export default function ProfilePage() {
     </div>
   );
 }
-    }
-    
-    const emptyStars = 5 - Math.ceil(rating);
     for (let i = 0; i < emptyStars; i++) {
       stars.push(
         <svg key={`empty-${i}`} className="w-4 h-4 text-gray-300 dark:text-gray-600 fill-current" viewBox="0 0 20 20">
