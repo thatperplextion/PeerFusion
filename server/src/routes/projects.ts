@@ -36,7 +36,32 @@ router.post('/', authenticateToken, async (req, res) => {
 router.get('/', authenticateToken, async (req, res) => {
   const userId = (req as any).user.id;
   try {
-    const result = await pool.query('SELECT * FROM projects WHERE user_id = ?', [userId]);
+    const result = await pool.query(
+      `SELECT p.*, u.first_name, u.last_name, 
+       CONCAT(u.first_name, ' ', u.last_name) as user_name 
+       FROM projects p 
+       JOIN users u ON p.user_id = u.id 
+       WHERE p.user_id = ?
+       ORDER BY p.created_at DESC`,
+      [userId]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch projects' });
+  }
+});
+
+// Get all projects (for browsing)
+router.get('/all', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT p.*, u.first_name, u.last_name, 
+       CONCAT(u.first_name, ' ', u.last_name) as user_name 
+       FROM projects p 
+       JOIN users u ON p.user_id = u.id 
+       ORDER BY p.created_at DESC`
+    );
     res.json(result.rows);
   } catch (err) {
     console.error(err);

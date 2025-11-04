@@ -37,10 +37,48 @@ export default function Dashboard() {
   }, [loading, isAuthenticated, router]);
 
   useEffect(() => {
-    // TODO: Fetch actual projects and activities from API
-    // setProjects([]);
-    // setActivities([]);
-  }, []);
+    const fetchData = async () => {
+      if (!isAuthenticated) return;
+      
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        // Fetch user's projects
+        const projectsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/projects`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (projectsResponse.ok) {
+          const projectsData = await projectsResponse.json();
+          console.log('Dashboard projects:', projectsData);
+          
+          // Transform backend data
+          const transformedProjects = projectsData.map((project: any) => ({
+            id: project.id,
+            title: project.title,
+            description: project.description,
+            author: project.user_name || `${project.first_name} ${project.last_name}` || 'You',
+            skills: [],
+            collaborators: 0,
+            createdAt: project.created_at,
+            status: project.status || 'seeking'
+          }));
+          
+          setProjects(transformedProjects);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchData();
+    }
+  }, [isAuthenticated]);
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
