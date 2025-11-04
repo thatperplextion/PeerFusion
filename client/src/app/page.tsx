@@ -78,14 +78,14 @@ export default function Home() {
               </p>
             </div>
             
-            <div className="card text-center p-6 transition-all duration-300 hover:shadow-lg">
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors duration-300">
-                <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-background border border-border rounded-lg text-center p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/50">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Networking</h3>
-              <p className="text-gray-600 dark:text-gray-300 transition-colors duration-300">
+              <h3 className="text-xl font-semibold text-foreground mb-2">Networking</h3>
+              <p className="text-muted-foreground">
                 Connect with peers, mentors, and collaborators in your academic field
               </p>
             </div>
@@ -94,30 +94,30 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <section className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-300">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
               How It Works
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto transition-colors duration-300">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Get started in three simple steps
             </p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-12 h-12 bg-blue-600 dark:bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold transition-colors duration-300">
+              <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
                 1
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Create Your Profile</h3>
-              <p className="text-gray-600 dark:text-gray-300 transition-colors duration-300">
+              <h3 className="text-xl font-semibold text-foreground mb-2">Create Your Profile</h3>
+              <p className="text-muted-foreground">
                 Set up your academic profile, highlight your skills, and showcase your research interests
               </p>
             </div>
             
             <div className="text-center">
-              <div className="w-12 h-12 bg-blue-600 dark:bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold transition-colors duration-300">
+              <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
                 2
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Connect & Collaborate</h3>
