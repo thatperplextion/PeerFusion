@@ -12,12 +12,12 @@ export default function ThemeToggle() {
     return (
       <div className="relative">
         <button
-          className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="p-2 rounded-lg bg-muted hover:bg-accent transition-smooth focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           aria-label="Theme settings"
           disabled
         >
           <svg
-            className="w-5 h-5 text-gray-700"
+            className="w-5 h-5 text-muted-foreground"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -44,7 +44,7 @@ export default function ThemeToggle() {
     if (theme === 'system') {
       return (
         <svg
-          className="w-5 h-5 text-gray-700 dark:text-gray-300"
+          className="w-5 h-5 text-foreground"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -63,7 +63,7 @@ export default function ThemeToggle() {
     if (resolvedTheme === 'dark') {
       return (
         <svg
-          className="w-5 h-5 text-yellow-400"
+          className="w-5 h-5 text-primary"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -81,7 +81,7 @@ export default function ThemeToggle() {
     
     return (
       <svg
-        className="w-5 h-5 text-gray-700"
+        className="w-5 h-5 text-foreground"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -101,7 +101,7 @@ export default function ThemeToggle() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+        className="p-2 rounded-lg bg-muted hover:bg-accent transition-smooth focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
         aria-label="Theme settings"
         aria-expanded={isOpen}
         aria-haspopup="true"
@@ -119,13 +119,13 @@ export default function ThemeToggle() {
           />
           
           {/* Dropdown */}
-          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 z-20 border border-gray-200 dark:border-gray-600">
+          <div className="absolute right-0 mt-2 w-48 bg-card rounded-lg shadow-lg py-2 z-20 border border-border">
             <button
               onClick={() => handleThemeChange('light')}
-              className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+              className={`w-full text-left px-4 py-2 text-sm transition-smooth ${
                 theme === 'light' 
-                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  ? 'bg-primary/10 text-primary' 
+                  : 'text-foreground hover:bg-accent'
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -143,10 +143,10 @@ export default function ThemeToggle() {
             
             <button
               onClick={() => handleThemeChange('dark')}
-              className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+              className={`w-full text-left px-4 py-2 text-sm transition-smooth ${
                 theme === 'dark' 
-                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  ? 'bg-primary/10 text-primary' 
+                  : 'text-foreground hover:bg-accent'
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -164,10 +164,10 @@ export default function ThemeToggle() {
             
             <button
               onClick={() => handleThemeChange('system')}
-              className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+              className={`w-full text-left px-4 py-2 text-sm transition-smooth ${
                 theme === 'system' 
-                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  ? 'bg-primary/10 text-primary' 
+                  : 'text-foreground hover:bg-accent'
               }`}
             >
               <div className="flex items-center space-x-3">
