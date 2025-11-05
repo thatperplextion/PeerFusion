@@ -1,6 +1,6 @@
 # 🎓 PeerFusion
 
-**PeerFusion** is a comprehensive academic collaboration platform designed to connect students, researchers, and academics for meaningful project partnerships and knowledge exchange.
+A modern platform connecting students and researchers for academic collaboration, project partnerships, and knowledge sharing.
 
 ## ✨ Features
 
