@@ -84,17 +84,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-center py-8 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center animate-fade-in">
+    <div className="min-h-screen bg-background flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md px-4">
+        <div className="flex justify-center animate-fade-in mb-6">
           <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
             <span className="text-white font-bold text-2xl">P</span>
           </div>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-bold text-foreground animate-slide-in">
+        <h2 className="text-center text-3xl font-bold text-foreground animate-slide-in mb-3">
           Sign in to your account
         </h2>
-        <p className="mt-2 text-center text-sm text-muted-foreground">
+        <p className="text-center text-sm text-muted-foreground mb-8">
           Or{' '}
           <Link href="/register" className="font-medium text-primary hover:opacity-90 transition-smooth">
             create a new account
@@ -102,11 +102,11 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md px-4">
         <div className="bg-card py-8 px-4 shadow-lg sm:rounded-xl sm:px-10 border border-border">
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-5">
             {error && (
-              <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg text-sm">
+              <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg text-sm animate-fade-in">
                 <strong>Login Failed:</strong> {error}
               </div>
             )}

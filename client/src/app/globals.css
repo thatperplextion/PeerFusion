@@ -561,6 +561,15 @@ a:hover {
 }
 
 /* ============================================
+   HEADER FIX - Ensure header stays on top
+   ============================================ */
+
+header {
+  background-color: var(--card) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* ============================================
    RESPONSIVE UTILITIES
    ============================================ */
 
@@ -573,3 +582,4 @@ a:hover {
     padding: 0.5rem 1rem;
   }
 }
+

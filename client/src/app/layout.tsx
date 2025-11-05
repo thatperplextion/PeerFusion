@@ -17,13 +17,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <ThemeProvider>
           <AuthProvider>
             <SocketProvider>
-              <Header />
-              <main className="bg-background" style={{ paddingTop: '80px', minHeight: 'calc(100vh - 80px)' }}>{children}</main>
+              <div className="relative min-h-screen">
+                <Header />
+                <main className="w-full">{children}</main>
+              </div>
             </SocketProvider>
           </AuthProvider>
         </ThemeProvider>

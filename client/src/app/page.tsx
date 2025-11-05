@@ -3,37 +3,35 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="w-full">
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-16 md:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-6 animate-fade-in">
-              Welcome to{" "}
-              <span className="text-primary">
-                PeerFusion
-              </span>
+      <section className="relative min-h-screen flex items-center justify-center bg-background px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-7xl mx-auto py-32">
+          <div className="text-center space-y-8">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-foreground animate-fade-in">
+              Welcome to <span className="text-primary">PeerFusion</span>
             </h1>
-            <p className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed animate-slide-in">
+            <p className="text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed animate-slide-in">
               The ultimate platform for students and teachers to collaborate on research, 
               share skills, and build meaningful connections in academia and beyond.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-in">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4 animate-slide-in">
               <Link
                 href="/register"
-                className="bg-primary hover:opacity-90 text-white px-8 py-3 text-lg font-semibold rounded-lg transition-smooth"
+                className="bg-primary hover:opacity-90 text-white px-10 py-4 text-lg font-semibold rounded-lg transition-smooth shadow-lg w-full sm:w-auto text-center"
               >
                 Get Started
               </Link>
               <Link
                 href="/login"
-                className="bg-card hover:bg-accent text-foreground border border-border px-8 py-3 text-lg font-semibold rounded-lg transition-smooth"
+                className="bg-card hover:bg-accent text-foreground border-2 border-border px-10 py-4 text-lg font-semibold rounded-lg transition-smooth w-full sm:w-auto text-center"
               >
                 Sign In
               </Link>
             </div>
           </div>
         </div>
+      </section>
         
         {/* Decorative elements */}
         <div className="absolute top-20 left-10 w-20 h-20 bg-primary/20 rounded-full opacity-20 animate-pulse"></div>
@@ -42,10 +40,10 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-16 md:py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+          <div className="text-center mb-12 md:mb-16 space-y-4">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
               Why Choose PeerFusion?
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -94,10 +92,10 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 bg-background">
+      <section className="py-16 md:py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+          <div className="text-center mb-12 md:mb-16 space-y-4">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
               How It Works
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -140,10 +138,10 @@ export default function Home() {
       </section>
 
       {/* Theme Showcase Section */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-16 md:py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+          <div className="text-center mb-12 md:mb-16 space-y-4">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
               Beautiful in Every Theme
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -192,12 +190,12 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+      <section className="py-16 md:py-20 bg-primary">
+        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 space-y-8">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white">
             Ready to Start Your Academic Journey?
           </h2>
-          <p className="text-xl text-white/90 mb-10 leading-relaxed">
+          <p className="text-xl text-white/90 leading-relaxed">
             Join thousands of students and teachers already collaborating on PeerFusion
           </p>
           <Link
