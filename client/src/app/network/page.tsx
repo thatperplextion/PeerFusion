@@ -199,7 +199,10 @@ export default function NetworkPage() {
                 </svg>
                 <p className="text-lg text-muted-foreground mb-2">No connections yet</p>
                 <p className="text-sm text-muted-foreground">Start connecting with researchers and collaborators!</p>
-                <Link href="/search" className="btn-primary inline-block mt-4">
+                <Link 
+                  href="/search" 
+                  className="inline-block mt-4 px-6 py-2.5 bg-card border border-primary/30 text-primary rounded-lg hover:bg-primary/10 hover:border-primary transition-all font-medium"
+                >
                   Find People
                 </Link>
               </div>

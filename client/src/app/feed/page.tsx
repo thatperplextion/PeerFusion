@@ -67,6 +67,8 @@ export default function FeedPage() {
 
     try {
       const token = localStorage.getItem("token");
+      console.log("Creating post with token:", token ? "exists" : "missing");
+      
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/posts`, {
         method: "POST",
         headers: {
@@ -76,12 +78,20 @@ export default function FeedPage() {
         body: JSON.stringify({ content: newPost, post_type: "update" }),
       });
 
+      console.log("Response status:", response.status);
+      
       if (response.ok) {
+        console.log("Post created successfully!");
         setNewPost("");
         fetchPosts();
+      } else {
+        const errorData = await response.json();
+        console.error("Error response:", errorData);
+        alert(`Failed to create post: ${errorData.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error("Error creating post:", error);
+      alert(`Error: ${error instanceof Error ? error.message : 'Failed to create post'}`);
     }
   };
 
