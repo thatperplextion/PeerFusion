@@ -55,8 +55,14 @@ export default function ChatButton() {
 
       {/* Chat Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-          <div className="w-full max-w-6xl h-[80vh] bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-200">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
+          onClick={() => setIsOpen(false)}
+        >
+          <div 
+            className="w-full max-w-6xl h-[80vh] bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 transition-colors duration-200">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white transition-colors duration-200">Chat</h2>
               <button

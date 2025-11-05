@@ -72,26 +72,31 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-background flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen w-full flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/10 -z-10" />
+      <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse delay-700" />
+      
+      <div className="w-full max-w-md space-y-8 animate-fade-in">
         <div className="text-center space-y-4">
-          <div className="flex justify-center animate-fade-in">
-            <div className="w-20 h-20 bg-primary rounded-2xl flex items-center justify-center shadow-2xl">
-              <span className="text-white font-bold text-3xl">P</span>
+          <div className="flex justify-center">
+            <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg hover-glow">
+              <span className="text-white font-bold text-2xl">P</span>
             </div>
           </div>
-          <h2 className="text-4xl font-bold text-foreground animate-slide-in">
+          <h2 className="text-4xl font-bold text-foreground">
             Create your account
           </h2>
           <p className="text-base text-muted-foreground">
             Or{' '}
-            <Link href="/login" className="font-semibold text-primary hover:opacity-90 transition-smooth">
+            <Link href="/login" className="font-semibold text-primary hover:text-primary/80 transition-colors">
               sign in to your existing account
             </Link>
           </p>
         </div>
 
-        <div className="bg-card py-10 px-6 sm:px-10 shadow-2xl rounded-2xl border border-border animate-fade-in">
+        <div className="glass-strong py-10 px-6 sm:px-10 shadow-2xl rounded-2xl">
           <form onSubmit={handleRegister} className="space-y-6">
             {error && (
               <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg text-sm font-medium animate-fade-in">

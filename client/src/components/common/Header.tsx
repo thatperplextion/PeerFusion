@@ -39,7 +39,7 @@ export default function Header() {
 
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-50 bg-card border-b border-border shadow-lg transition-transform duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 glass-strong shadow-lg transition-transform duration-300 ${
         isVisible ? 'translate-y-0' : '-translate-y-full'
       } hover:translate-y-0`}
     >
@@ -94,29 +94,36 @@ export default function Header() {
 
                   {/* Dropdown Menu */}
                   {isMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-card rounded-lg shadow-lg py-1 z-50 border border-border">
-                      <Link
-                        href={`/profile/${user.id || 'me'}`}
-                        className="block px-4 py-2 text-sm text-foreground hover:bg-muted rounded-md mx-1"
+                    <>
+                      {/* Backdrop to close dropdown when clicking outside */}
+                      <div 
+                        className="fixed inset-0 z-40" 
                         onClick={() => setIsMenuOpen(false)}
-                      >
-                        My Profile
-                      </Link>
-                      <Link
-                        href="/settings"
-                        className="block px-4 py-2 text-sm text-foreground hover:bg-muted rounded-md mx-1"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Settings
-                      </Link>
-                      <hr className="my-1 border-border" />
-                      <button
-                        onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-sm text-destructive hover:bg-muted rounded-md mx-1"
-                      >
-                        Sign Out
-                      </button>
-                    </div>
+                      />
+                      <div className="absolute right-0 mt-2 w-48 glass-strong rounded-lg shadow-xl py-2 z-50 border border-border">
+                        <Link
+                          href={`/profile/${user.id || 'me'}`}
+                          className="block px-4 py-2 text-sm text-foreground hover:bg-primary/10 rounded-md mx-1 transition-colors"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          My Profile
+                        </Link>
+                        <Link
+                          href="/settings"
+                          className="block px-4 py-2 text-sm text-foreground hover:bg-primary/10 rounded-md mx-1 transition-colors"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Settings
+                        </Link>
+                        <hr className="my-1 border-border/50 mx-2" />
+                        <button
+                          onClick={handleLogout}
+                          className="block w-full text-left px-4 py-2 text-sm text-destructive hover:bg-destructive/10 rounded-md mx-1 transition-colors"
+                        >
+                          Sign Out
+                        </button>
+                      </div>
+                    </>
                   )}
                 </div>
               </>
