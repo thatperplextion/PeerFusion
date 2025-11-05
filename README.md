@@ -1,70 +1,194 @@
-# PeerFusion — Quick start
+# 🎓 PeerFusion
 
-This repository contains a Next.js client and an Express + TypeScript server with Supabase as the database and file storage solution.
+**PeerFusion** is a comprehensive academic collaboration platform designed to connect students, researchers, and academics for meaningful project partnerships and knowledge exchange.
 
-## Quick start (local)
+## ✨ Features
 
-1. Client dependencies
+### 👥 User Management
+- **Secure Authentication** - JWT-based authentication with bcrypt password hashing
+- **Rich User Profiles** - Customizable profiles with bio, institution, field of study, and avatar
+- **Skills & Expertise** - Tag and showcase your technical skills and research interests
 
-```powershell
-cd "C:\Users\JUNAID ASAD KHAN\peerfusion\PeerFusion\client"
+### 🚀 Project Collaboration
+- **Project Creation** - Post and manage academic projects seeking collaborators
+- **Project Discovery** - Browse and search projects by status, field, or keywords
+- **Collaboration Requests** - Connect with project creators and join teams
+
+### 💬 Communication
+- **Real-time Messaging** - Direct messaging between users with Socket.IO
+- **Notifications** - Stay updated on project invites, messages, and connections
+- **Connection System** - Build your academic network with connection requests
+
+### 📱 Social Features
+- **Activity Feed** - Share updates, research findings, and academic achievements
+- **Post Interactions** - Like, comment, and engage with community posts
+- **User Search** - Find peers by name, institution, or research interests
+
+### 🎨 User Experience
+- **Dark/Light Mode** - Comfortable viewing in any environment
+- **Responsive Design** - Seamless experience across desktop, tablet, and mobile
+- **Modern UI** - Clean, intuitive interface built with Tailwind CSS
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **Next.js 15** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first styling
+- **Socket.IO Client** - Real-time communication
+
+### Backend
+- **Express.js** - Node.js web framework
+- **TypeScript** - Type-safe API development
+- **Supabase** - PostgreSQL database and authentication
+- **Socket.IO** - WebSocket server for real-time features
+- **JWT** - Secure token-based authentication
+
+### Infrastructure
+- **Render** - Cloud hosting for both frontend and backend
+- **Supabase** - Database, authentication, and storage
+- **Git** - Version control
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- Supabase account
+- Git
+
+### Installation
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/Falco0906/PeerFusion.git
+cd PeerFusion
+```
+
+2. **Install dependencies**
+```bash
+# Install backend dependencies
+cd server
+npm install
+
+# Install frontend dependencies
+cd ../client
 npm install
 ```
 
-2. Server dependencies
+3. **Configure environment variables**
 
-```powershell
-cd "C:\Users\JUNAID ASAD KHAN\peerfusion\PeerFusion\server"
-npm install
+**Backend** (`server/.env`):
+```env
+NODE_ENV=development
+PORT=5050
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_KEY=your_supabase_service_key
+JWT_SECRET=your_jwt_secret
 ```
 
-3. Configure environment for server
+**Frontend** (`client/.env.local`):
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5050
+```
 
-- Copy `server/.env.example` to `server/.env` and fill in your Supabase credentials:
-  - `SUPABASE_URL`: Your Supabase project URL
-  - `SUPABASE_ANON_KEY`: Your Supabase anon/public key
-  - `SUPABASE_SERVICE_KEY`: Your Supabase service role key
-  - `JWT_SECRET`: A secure random string (minimum 32 characters)
-- See **[SUPABASE_SETUP.md](SUPABASE_SETUP.md)** for detailed setup instructions
+4. **Set up the database**
+- Go to your Supabase Dashboard → SQL Editor
+- Run the schema from `server/src/database/supabase_schema.sql`
 
-4. Run server (dev)
+5. **Start development servers**
+```bash
+# Terminal 1 - Backend
+cd server
+npm run dev
 
-```powershell
-cd "C:\Users\JUNAID ASAD KHAN\peerfusion\PeerFusion\server"
-# Start with nodemon (auto restarts on code change)
+# Terminal 2 - Frontend
+cd client
 npm run dev
 ```
 
-If port 5050 is in use, run with a different port:
+6. **Open your browser**
+- Frontend: http://localhost:3002
+- Backend API: http://localhost:5050
 
-```powershell
-SET PORT=5051; npm run dev
+## 📁 Project Structure
+
+```
+PeerFusion/
+├── client/                 # Next.js frontend
+│   ├── src/
+│   │   ├── app/           # App router pages
+│   │   ├── components/    # React components
+│   │   ├── contexts/      # React contexts (Auth, Theme, Socket)
+│   │   ├── services/      # API service layer
+│   │   └── utils/         # Utility functions
+│   └── public/            # Static assets
+│
+├── server/                # Express backend
+│   ├── src/
+│   │   ├── routes/        # API routes
+│   │   ├── middleware/    # Express middleware
+│   │   ├── database/      # Database schemas
+│   │   └── utils/         # Utility functions
+│   └── dist/              # Compiled TypeScript
+│
+├── render.yaml            # Render deployment config
+└── README.md
 ```
 
-5. Run client (dev)
+## 🌐 Deployment
 
-```powershell
-cd "C:\Users\JUNAID ASAD KHAN\peerfusion\PeerFusion\client"
-npm run dev
-```
+The application is configured for deployment on Render with automated CI/CD from GitHub.
 
-Open http://localhost:3000 in your browser.
+### Deploy to Render
 
-## Supabase Setup
+1. Push your code to GitHub
+2. Connect your repository to Render
+3. Render will automatically detect `render.yaml` and deploy both services
+4. Configure environment variables in Render dashboard
 
-This project uses **Supabase** for database and file storage. Follow these steps:
+See `RENDER_DEPLOYMENT.md` for detailed deployment instructions.
 
-1. **Create a Supabase project** at [supabase.com](https://supabase.com)
-2. **Run the database schema**: Copy and run `server/src/database/supabase_schema.sql` in your Supabase SQL Editor
-3. **Set up storage buckets**: Run `node server/scripts/setup-storage.js` after configuring your `.env`
-4. **Configure environment variables**: Update `server/.env` with your Supabase credentials
+## 🔐 Security Features
 
-For detailed instructions, see **[SUPABASE_SETUP.md](SUPABASE_SETUP.md)**
+- ✅ JWT-based authentication
+- ✅ Bcrypt password hashing
+- ✅ CORS protection
+- ✅ Helmet.js security headers
+- ✅ Rate limiting
+- ✅ Input validation
+- ✅ SQL injection prevention (Supabase ORM)
 
-For migration help from MySQL/PostgreSQL, see **[server/SUPABASE_MIGRATION_GUIDE.md](server/SUPABASE_MIGRATION_GUIDE.md)**
+## 🤝 Contributing
 
-## Notes
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-- The client calls the API at `http://localhost:5050` by default. You can override with `NEXT_PUBLIC_API_URL` in the client environment.
-- The server uses JWT for auth; ensure `JWT_SECRET` is set before using auth endpoints.
-- All file uploads (avatars, post images, documents) are stored in Supabase Storage. 
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 👨‍💻 Author
+
+**Faisal Khan**
+- GitHub: [@Falco0906](https://github.com/Falco0906)
+
+## 🙏 Acknowledgments
+
+- Next.js team for the amazing framework
+- Supabase for the backend infrastructure
+- The open-source community
+
+## 📧 Contact
+
+For questions or feedback, please open an issue on GitHub.
+
+---
+
+**Built with ❤️ for the academic community**
