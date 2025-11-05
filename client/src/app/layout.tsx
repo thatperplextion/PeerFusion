@@ -24,7 +24,7 @@ export default function RootLayout({
             <SocketProvider>
               <div className="relative min-h-screen">
                 <Header />
-                <main className="w-full">{children}</main>
+                <main className="w-full pt-16">{children}</main>
               </div>
             </SocketProvider>
           </AuthProvider>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import ChatButton from "@/components/chat/ChatButton";
 import ThemeToggle from "./ThemeToggle";
@@ -10,13 +10,39 @@ import NotificationBell from "./NotificationBell";
 export default function Header() {
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Show header when scrolling up or at top
+      if (currentScrollY < lastScrollY || currentScrollY < 10) {
+        setIsVisible(true);
+      } 
+      // Hide header when scrolling down (after 100px)
+      else if (currentScrollY > 100 && currentScrollY > lastScrollY) {
+        setIsVisible(false);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   const handleLogout = () => {
     logout();
   };
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50 bg-card border-b border-border shadow-sm">
+    <header 
+      className={`fixed top-0 left-0 right-0 z-50 bg-card border-b border-border shadow-lg transition-transform duration-300 ${
+        isVisible ? 'translate-y-0' : '-translate-y-full'
+      } hover:translate-y-0`}
+    >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo / Brand */}
