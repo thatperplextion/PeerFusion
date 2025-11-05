@@ -1,585 +1,90 @@
-@import "tailwindcss";
-
-/* ============================================
-   CHATGPT-INSPIRED THEME SYSTEM
-   ============================================ */
+﻿@import "tailwindcss";
 
 :root {
-  /* Light theme - Clean & Minimal */
-  --background: #ffffff;
-  --background-secondary: #f9fafb;
-  --foreground: #0d0d0d;
-  --card: #ffffff;
-  --card-foreground: #0d0d0d;
-  --card-hover: #f9fafb;
-  --popover: #ffffff;
-  --popover-foreground: #0d0d0d;
-  --primary: #19c37d;
-  --primary-hover: #17b575;
-  --primary-foreground: #ffffff;
-  --secondary: #f4f4f4;
-  --secondary-foreground: #0d0d0d;
-  --muted: #f9fafb;
-  --muted-foreground: #6e6e80;
-  --accent: #f0f0f0;
-  --accent-foreground: #0d0d0d;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #e5e5e5;
-  --border-light: #f0f0f0;
-  --input: #f4f4f4;
-  --input-border: #d1d1d1;
-  --ring: #19c37d;
-  --radius: 0.75rem;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --background: 255 255 255;
+  --foreground: 15 23 42;
+  --card: 255 255 255;
+  --card-foreground: 15 23 42;
+  --primary: 59 130 246;
+  --primary-foreground: 255 255 255;
+  --muted: 241 245 249;
+  --muted-foreground: 100 116 139;
+  --accent: 240 244 248;
+  --accent-foreground: 15 23 42;
+  --border: 226 232 240;
+  --destructive: 239 68 68;
 }
 
 .dark {
-  /* Dark theme - ChatGPT Style */
-  --background: #1a1a1a;
-  --background-secondary: #212121;
-  --foreground: #ececec;
-  --card: #2d2d2d;
-  --card-foreground: #ececec;
-  --card-hover: #353535;
-  --popover: #2d2d2d;
-  --popover-foreground: #ececec;
-  --primary: #19c37d;
-  --primary-hover: #17b575;
-  --primary-foreground: #ffffff;
-  --secondary: #2d2d2d;
-  --secondary-foreground: #ececec;
-  --muted: #262626;
-  --muted-foreground: #a0a0a0;
-  --accent: #2d2d2d;
-  --accent-foreground: #ececec;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #404040;
-  --border-light: #353535;
-  --input: #2d2d2d;
-  --input-border: #404040;
-  --ring: #19c37d;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --background: 15 23 42;
+  --foreground: 248 250 252;
+  --card: 30 41 59;
+  --card-foreground: 248 250 252;
+  --primary: 59 130 246;
+  --primary-foreground: 255 255 255;
+  --muted: 51 65 85;
+  --muted-foreground: 148 163 184;
+  --accent: 51 65 85;
+  --accent-foreground: 248 250 252;
+  --border: 51 65 85;
+  --destructive: 239 68 68;
 }
-
-/* ============================================
-   SMOOTH ANIMATIONS & TRANSITIONS
-   ============================================ */
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-/* ============================================
-   BASE STYLES
-   ============================================ */
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-*:focus {
-  outline: none;
-}
-
-html {
-  scroll-behavior: smooth;
+  border-color: rgb(var(--border));
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
-  line-height: 1.6;
-  min-height: 100vh;
-  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background: rgb(var(--background));
+  color: rgb(var(--foreground));
 }
 
-/* ============================================
-   SCROLLBAR STYLING
-   ============================================ */
+/* Smooth transitions */
+button,
+a,
+input,
+textarea,
+select {
+  transition: all 0.2s ease-in-out;
+}
 
+/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgb(var(--muted));
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 4px;
-  transition: background 0.2s ease;
+  background: rgb(var(--primary));
+  border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--muted-foreground);
+  background: rgb(var(--primary) / 0.8);
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: var(--border);
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: var(--muted-foreground);
-}
-
-/* ============================================
-   SELECTION STYLING
-   ============================================ */
-
-::selection {
-  background: var(--primary);
-  color: var(--primary-foreground);
-}
-
-::-moz-selection {
-  background: var(--primary);
-  color: var(--primary-foreground);
-}
-
-/* ============================================
-   FOCUS STATES
-   ============================================ */
-
-*:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* ============================================
-   CARDS & CONTAINERS
-   ============================================ */
-
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.5rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--shadow-sm);
-  animation: fadeIn 0.3s ease;
-}
-
-.card:hover {
-  background: var(--card-hover);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
-
-.card-interactive {
-  cursor: pointer;
-  user-select: none;
-}
-
-.card-interactive:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
-}
-
-/* ============================================
-   BUTTONS
-   ============================================ */
-
+/* Button styles */
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  border-radius: var(--radius);
-  font-weight: 500;
-  font-size: 0.875rem;
-  padding: 0.625rem 1.25rem;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  white-space: nowrap;
-  user-select: none;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: none;
+  @apply inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300;
 }
 
 .btn-primary {
-  background: var(--primary);
-  color: var(--primary-foreground);
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: var(--primary-hover);
-  box-shadow: var(--shadow);
-  transform: translateY(-1px);
-}
-
-.btn-primary:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
+  @apply bg-primary text-primary-foreground hover:shadow-lg hover:shadow-primary/25 hover:scale-[1.02] active:scale-[0.98];
 }
 
 .btn-secondary {
-  background: var(--secondary);
-  color: var(--secondary-foreground);
-  border: 1px solid var(--border);
+  @apply bg-card text-foreground border-2 border-border hover:border-primary hover:shadow-lg;
 }
 
-.btn-secondary:hover:not(:disabled) {
-  background: var(--accent);
-  border-color: var(--border);
+/* Input styles */
+.input {
+  @apply w-full px-4 py-3 bg-card text-foreground border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 placeholder:text-muted-foreground;
 }
 
-.btn-ghost {
-  background: transparent;
-  color: var(--foreground);
-}
-
-.btn-ghost:hover:not(:disabled) {
-  background: var(--accent);
-}
-
-.btn-outline {
-  background: transparent;
-  color: var(--foreground);
-  border: 1px solid var(--border);
-}
-
-.btn-outline:hover:not(:disabled) {
-  background: var(--accent);
-  border-color: var(--primary);
-}
-
-.btn-sm {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.8125rem;
-}
-
-.btn-lg {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-}
-
-/* ============================================
-   INPUTS & FORMS
-   ============================================ */
-
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="search"],
-input[type="url"],
-input[type="tel"],
-input[type="number"],
-textarea,
-select {
-  width: 100%;
-  background: var(--input);
-  color: var(--foreground);
-  border: 1px solid var(--input-border);
-  border-radius: var(--radius);
-  padding: 0.625rem 0.875rem;
-  font-size: 0.9375rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(25, 195, 125, 0.1);
-}
-
-input::placeholder,
-textarea::placeholder {
-  color: var(--muted-foreground);
-}
-
-textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-.form-label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--foreground);
-  margin-bottom: 0.5rem;
-}
-
-.form-error {
-  color: var(--destructive);
-  font-size: 0.8125rem;
-  margin-top: 0.375rem;
-}
-
-/* ============================================
-   LINKS
-   ============================================ */
-
-a {
-  color: var(--primary);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-a:hover {
-  color: var(--primary-hover);
-  text-decoration: underline;
-}
-
-/* ============================================
-   BADGES & PILLS
-   ============================================ */
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.625rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.badge-primary {
-  background: var(--primary);
-  color: var(--primary-foreground);
-}
-
-.badge-secondary {
-  background: var(--secondary);
-  color: var(--secondary-foreground);
-}
-
-.badge-outline {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--foreground);
-}
-
-/* ============================================
-   LOADING STATES
-   ============================================ */
-
-.loading {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--muted) 0%,
-    var(--accent) 50%,
-    var(--muted) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
-  border-radius: var(--radius);
-}
-
+/* Spinner */
 .spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--border);
-  border-top-color: var(--primary);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  @apply w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin;
 }
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ============================================
-   TOOLTIPS & POPOVERS
-   ============================================ */
-
-.tooltip {
-  position: relative;
-}
-
-.tooltip::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-8px);
-  background: var(--popover);
-  color: var(--popover-foreground);
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.375rem;
-  font-size: 0.8125rem;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border);
-}
-
-.tooltip:hover::after {
-  opacity: 1;
-  transform: translateX(-50%) translateY(-4px);
-}
-
-/* ============================================
-   ANIMATIONS
-   ============================================ */
-
-.animate-fade-in {
-  animation: fadeIn 0.3s ease;
-}
-
-.animate-slide-in {
-  animation: slideIn 0.3s ease;
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.2s ease;
-}
-
-/* ============================================
-   UTILITY CLASSES
-   ============================================ */
-
-.text-primary {
-  color: var(--primary);
-}
-
-.text-muted {
-  color: var(--muted-foreground);
-}
-
-.text-destructive {
-  color: var(--destructive);
-}
-
-.bg-background {
-  background: var(--background);
-}
-
-.bg-card {
-  background: var(--card);
-}
-
-.bg-muted {
-  background: var(--muted);
-}
-
-.border-default {
-  border: 1px solid var(--border);
-}
-
-.shadow-sm {
-  box-shadow: var(--shadow-sm);
-}
-
-.shadow {
-  box-shadow: var(--shadow);
-}
-
-.shadow-md {
-  box-shadow: var(--shadow-md);
-}
-
-.shadow-lg {
-  box-shadow: var(--shadow-lg);
-}
-
-.rounded {
-  border-radius: var(--radius);
-}
-
-.transition-smooth {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* ============================================
-   HEADER FIX - Ensure header stays on top
-   ============================================ */
-
-header {
-  background-color: var(--card) !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-}
-
-/* ============================================
-   RESPONSIVE UTILITIES
-   ============================================ */
-
-@media (max-width: 768px) {
-  .card {
-    padding: 1rem;
-  }
-  
-  .btn {
-    padding: 0.5rem 1rem;
-  }
-}
-

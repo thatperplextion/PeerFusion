@@ -3,88 +3,103 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="w-full">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-background px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-7xl mx-auto py-32">
-          <div className="text-center space-y-8">
-            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-foreground animate-fade-in">
-              Welcome to <span className="text-primary">PeerFusion</span>
-            </h1>
-            <p className="text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed animate-slide-in">
-              The ultimate platform for students and teachers to collaborate on research, 
-              share skills, and build meaningful connections in academia and beyond.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4 animate-slide-in">
-              <Link
-                href="/register"
-                className="bg-primary hover:opacity-90 text-white px-10 py-4 text-lg font-semibold rounded-lg transition-smooth shadow-lg w-full sm:w-auto text-center"
-              >
-                Get Started
-              </Link>
-              <Link
-                href="/login"
-                className="bg-card hover:bg-accent text-foreground border-2 border-border px-10 py-4 text-lg font-semibold rounded-lg transition-smooth w-full sm:w-auto text-center"
-              >
-                Sign In
-              </Link>
-            </div>
+      <section className="relative pt-24 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/10 -z-10" />
+        
+        <div className="max-w-7xl mx-auto text-center relative">
+          <div className="inline-block mb-6 px-4 py-2 bg-primary/10 rounded-full">
+            <span className="text-sm font-medium text-primary">Welcome to the Future of Collaboration</span>
+          </div>
+          
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight">
+            Connect. Collaborate. <br />
+            <span className="text-primary">Create Together.</span>
+          </h1>
+          
+          <p className="text-xl text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed">
+            Join thousands of students and educators on PeerFusion—the ultimate platform for 
+            collaborative research, skill-sharing, and building meaningful academic connections.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link
+              href="/register"
+              className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-primary-foreground bg-primary rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-primary/25 min-w-[200px]"
+            >
+              <span className="relative z-10">Get Started Free</span>
+              <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+            
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-foreground bg-card border-2 border-border rounded-xl transition-all duration-300 hover:border-primary hover:shadow-lg min-w-[200px]"
+            >
+              Sign In
+            </Link>
           </div>
         </div>
       </section>
-        
-        {/* Decorative elements */}
-        <div className="absolute top-20 left-10 w-20 h-20 bg-primary/20 rounded-full opacity-20 animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-16 h-16 bg-primary/30 rounded-full opacity-20 animate-pulse delay-1000"></div>
-        <div className="absolute bottom-20 left-1/4 w-12 h-12 bg-primary/25 rounded-full opacity-20 animate-pulse delay-500"></div>
-      </section>
 
       {/* Features Section */}
-      <section className="py-16 md:py-20 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 md:mb-16 space-y-4">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
               Why Choose PeerFusion?
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Connect, collaborate, and grow with like-minded individuals in your field
+              Everything you need to collaborate, learn, and grow in one place
             </p>
           </div>
           
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            <div className="bg-card border border-border rounded-xl text-center p-8 transition-smooth hover:shadow-xl hover:border-primary/50 hover:-translate-y-1 animate-fade-in">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Feature 1 */}
+            <div className="group relative bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2">
+              <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                <svg className="w-7 h-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">Collaborative Research</h3>
+              <h3 className="text-2xl font-bold text-foreground mb-3">
+                Collaborative Research
+              </h3>
               <p className="text-muted-foreground leading-relaxed">
-                Work together on research projects, share findings, and build on each other's work
+                Connect with peers and mentors to work on groundbreaking research projects together.
               </p>
             </div>
-            
-            <div className="bg-card border border-border rounded-xl text-center p-8 transition-smooth hover:shadow-xl hover:border-primary/50 hover:-translate-y-1 animate-fade-in">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+            {/* Feature 2 */}
+            <div className="group relative bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2">
+              <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                <svg className="w-7 h-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">Skill Sharing</h3>
+              <h3 className="text-2xl font-bold text-foreground mb-3">
+                Skill Exchange
+              </h3>
               <p className="text-muted-foreground leading-relaxed">
-                Teach what you know, learn from others, and expand your expertise
+                Teach what you know, learn what you don't. Share expertise and explore new skills.
               </p>
             </div>
-            
-            <div className="bg-card border border-border rounded-xl text-center p-8 transition-smooth hover:shadow-xl hover:border-primary/50 hover:-translate-y-1 animate-fade-in sm:col-span-2 lg:col-span-1">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+            {/* Feature 3 */}
+            <div className="group relative bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2">
+              <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                <svg className="w-7 h-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">Networking</h3>
+              <h3 className="text-2xl font-bold text-foreground mb-3">
+                Mentorship Network
+              </h3>
               <p className="text-muted-foreground leading-relaxed">
-                Connect with peers, mentors, and collaborators in your academic field
+                Get guidance from experienced professionals who can accelerate your journey.
               </p>
             </div>
           </div>
@@ -92,10 +107,10 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-16 md:py-20 bg-background">
+      <section className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 md:mb-16 space-y-4">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
+          <div className="text-center mb-16 space-y-3">
+            <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
               How It Works
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -138,10 +153,10 @@ export default function Home() {
       </section>
 
       {/* Theme Showcase Section */}
-      <section className="py-16 md:py-20 bg-muted/30">
+      <section className="py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 md:mb-16 space-y-4">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
+          <div className="text-center mb-16 space-y-3">
+            <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
               Beautiful in Every Theme
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -190,20 +205,29 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-20 bg-primary">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 space-y-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white">
-            Ready to Start Your Academic Journey?
+      <section className="relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/90 to-primary -z-10" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-20 -z-10" />
+        
+        <div className="max-w-4xl mx-auto text-center relative">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+            Ready to Transform Your <br className="hidden sm:block" />Academic Journey?
           </h2>
-          <p className="text-xl text-white/90 leading-relaxed">
-            Join thousands of students and teachers already collaborating on PeerFusion
+          <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Join thousands of students and educators already collaborating on PeerFusion
           </p>
           <Link
             href="/register"
-            className="bg-white text-primary hover:bg-gray-100 px-10 py-4 text-lg font-semibold transition-smooth inline-block rounded-lg shadow-lg hover:shadow-xl hover:scale-105"
+            className="inline-flex items-center justify-center px-10 py-5 text-lg font-bold text-primary bg-white rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl"
           >
-            Join PeerFusion Today
+            Start Collaborating Today
+            <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
           </Link>
+          <p className="mt-6 text-sm text-white/80">
+            No credit card required • Free forever • 2 minute setup
+          </p>
         </div>
       </section>
 
