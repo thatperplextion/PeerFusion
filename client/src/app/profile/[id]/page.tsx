@@ -322,7 +322,7 @@ export default function ProfilePage() {
   if (!currentUser) {
     return (
       <motion.div 
-        className="min-h-screen bg-background flex items-center justify-center"
+        className="min-h-screen flex items-center justify-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
@@ -340,7 +340,7 @@ export default function ProfilePage() {
   if (!profile) {
     return (
       <motion.div 
-        className="min-h-screen bg-background flex items-center justify-center"
+        className="min-h-screen flex items-center justify-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
@@ -359,7 +359,7 @@ export default function ProfilePage() {
 
   return (
     <motion.div 
-      className="min-h-screen bg-background py-8"
+      className="min-h-screen py-8"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
@@ -372,7 +372,7 @@ export default function ProfilePage() {
           whileHover={{ scale: 1.005 }}
         >
           {/* Cover Image / Gradient Background */}
-          <div className="h-48 bg-gradient-to-r from-primary via-primary/80 to-primary/60 relative">
+          <div className="h-48 bg-gradient-to-r from-primary/90 via-primary/70 to-primary/50 dark:from-primary dark:via-primary/80 dark:to-primary/60 relative">
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
           </div>
 
@@ -383,7 +383,7 @@ export default function ProfilePage() {
               <div className="flex items-end space-x-6">
                 {/* Enhanced Avatar */}
                 <motion.div 
-                  className="w-32 h-32 bg-gradient-to-br from-primary to-primary/70 rounded-2xl flex items-center justify-center text-white text-4xl font-bold shadow-2xl ring-4 ring-background relative overflow-hidden"
+                  className="w-32 h-32 bg-gradient-to-br from-primary to-primary/80 dark:from-primary dark:to-primary/70 rounded-2xl flex items-center justify-center text-white text-4xl font-bold shadow-2xl ring-4 ring-background relative overflow-hidden"
                   whileHover={{ scale: 1.05, rotate: 2 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
@@ -683,7 +683,7 @@ export default function ProfilePage() {
           className="glass-strong rounded-lg mb-6 border border-border"
           variants={itemVariants}
         >
-          <div className="border-b border-gray-200 dark:border-gray-700">
+          <div className="border-b border-border">
             <nav className="flex space-x-8 px-6" aria-label="Tabs">
               {['overview', 'skills', 'publications', 'projects'].map((tab) => (
                 <button
@@ -844,18 +844,18 @@ export default function ProfilePage() {
             {activeTab === 'skills' && (
               <div className="grid gap-4 md:grid-cols-2">
                 {skills.map((skill) => (
-                  <div key={skill.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <div key={skill.id} className="border border-border rounded-lg p-4">
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        <h4 className="font-semibold text-gray-900 dark:text-white">{skill.skill_name}</h4>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{skill.category}</p>
+                        <h4 className="font-semibold text-foreground">{skill.skill_name}</h4>
+                        <p className="text-sm text-muted-foreground">{skill.category}</p>
                       </div>
                       <span className="px-2 py-1 text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">
                         {skill.proficiency_level}
                       </span>
                     </div>
                     {skill.description && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{skill.description}</p>
+                      <p className="text-sm text-muted-foreground mb-2">{skill.description}</p>
                     )}
                     {skill.years_of_experience && (
                       <p className="text-xs text-gray-500 dark:text-gray-500">
@@ -885,7 +885,7 @@ export default function ProfilePage() {
                   </div>
                 ))}
                 {skills.length === 0 && (
-                  <p className="text-gray-500 dark:text-gray-400">No skills added yet.</p>
+                  <p className="text-muted-foreground">No skills added yet.</p>
                 )}
               </div>
             )}
@@ -894,10 +894,10 @@ export default function ProfilePage() {
             {activeTab === 'publications' && (
               <div className="space-y-4">
                 {publications.map((pub) => (
-                  <div key={pub.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                    <h4 className="font-semibold text-lg text-gray-900 dark:text-white mb-2">{pub.title}</h4>
+                  <div key={pub.id} className="border border-border rounded-lg p-4">
+                    <h4 className="font-semibold text-lg text-foreground mb-2">{pub.title}</h4>
                     {pub.authors && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{pub.authors}</p>
+                      <p className="text-sm text-muted-foreground mb-1">{pub.authors}</p>
                     )}
                     {pub.journal && (
                       <p className="text-sm text-gray-500 dark:text-gray-500">
@@ -905,7 +905,7 @@ export default function ProfilePage() {
                       </p>
                     )}
                     <div className="flex items-center space-x-4 mt-3">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                      <span className="text-sm text-muted-foreground">
                         📊 {pub.citation_count} citations
                       </span>
                       {pub.doi && (
@@ -932,7 +932,7 @@ export default function ProfilePage() {
                   </div>
                 ))}
                 {publications.length === 0 && (
-                  <p className="text-gray-500 dark:text-gray-400">No publications added yet.</p>
+                  <p className="text-muted-foreground">No publications added yet.</p>
                 )}
               </div>
             )}

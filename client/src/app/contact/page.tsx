@@ -42,18 +42,18 @@ export default function ContactPage() {
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
             Contact Us
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
+          <p className="text-lg text-muted-foreground">
             Have a question or need assistance? We're here to help!
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
           {/* Contact Form */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          <div className="bg-card rounded-lg shadow-md p-8">
+            <h2 className="text-2xl font-bold text-foreground mb-6">
               Send us a message
             </h2>
 
@@ -67,7 +67,7 @@ export default function ContactPage() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
                   Name
                 </label>
                 <input
@@ -77,12 +77,12 @@ export default function ContactPage() {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground"
                 />
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
                   Email
                 </label>
                 <input
@@ -92,12 +92,12 @@ export default function ContactPage() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground"
                 />
               </div>
 
               <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="subject" className="block text-sm font-medium text-foreground mb-2">
                   Subject
                 </label>
                 <select
@@ -106,7 +106,7 @@ export default function ContactPage() {
                   value={formData.subject}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground"
                 >
                   <option value="">Select a subject</option>
                   <option value="general">General Inquiry</option>
@@ -120,7 +120,7 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
                   Message
                 </label>
                 <textarea
@@ -130,7 +130,7 @@ export default function ContactPage() {
                   onChange={handleChange}
                   rows={6}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground"
                 />
               </div>
 
@@ -147,8 +147,8 @@ export default function ContactPage() {
           {/* Contact Information */}
           <div className="space-y-6">
             {/* Contact Methods */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            <div className="bg-card rounded-lg shadow-md p-8">
+              <h2 className="text-2xl font-bold text-foreground mb-6">
                 Other ways to reach us
               </h2>
 
@@ -160,8 +160,8 @@ export default function ContactPage() {
                     </svg>
                   </div>
                   <div className="ml-4">
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Email</h3>
-                    <p className="text-gray-600 dark:text-gray-400">support@peerfusion.com</p>
+                    <h3 className="font-semibold text-foreground">Email</h3>
+                    <p className="text-muted-foreground">support@peerfusion.com</p>
                     <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
                       We typically respond within 24 hours
                     </p>
@@ -175,8 +175,8 @@ export default function ContactPage() {
                     </svg>
                   </div>
                   <div className="ml-4">
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Live Chat</h3>
-                    <p className="text-gray-600 dark:text-gray-400">Available Mon-Fri, 9am-5pm EST</p>
+                    <h3 className="font-semibold text-foreground">Live Chat</h3>
+                    <p className="text-muted-foreground">Available Mon-Fri, 9am-5pm EST</p>
                     <button className="text-sm text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 mt-1">
                       Start a chat →
                     </button>
@@ -190,8 +190,8 @@ export default function ContactPage() {
                     </svg>
                   </div>
                   <div className="ml-4">
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Documentation</h3>
-                    <p className="text-gray-600 dark:text-gray-400">Find answers in our docs</p>
+                    <h3 className="font-semibold text-foreground">Documentation</h3>
+                    <p className="text-muted-foreground">Find answers in our docs</p>
                     <Link href="/help" className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 mt-1 inline-block">
                       View Help Center →
                     </Link>
@@ -215,21 +215,21 @@ export default function ContactPage() {
             </div>
 
             {/* Social Media */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            <div className="bg-card rounded-lg shadow-md p-8">
+              <h2 className="text-xl font-bold text-foreground mb-4">
                 Connect with us
               </h2>
               <div className="flex space-x-4">
-                <a href="#" className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                <a href="#" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
                   <span className="text-2xl">𝕏</span>
                 </a>
-                <a href="#" className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                <a href="#" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
                   <span className="text-2xl">📘</span>
                 </a>
-                <a href="#" className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                <a href="#" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
                   <span className="text-2xl">💼</span>
                 </a>
-                <a href="#" className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                <a href="#" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
                   <span className="text-2xl">📷</span>
                 </a>
               </div>

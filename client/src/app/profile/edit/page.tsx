@@ -99,8 +99,8 @@ export default function EditProfilePage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center transition-colors duration-200">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-200">Authentication Required</h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-4 transition-colors duration-200">Please log in to edit your profile.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-2 transition-colors duration-200">Authentication Required</h1>
+          <p className="text-muted-foreground mb-4 transition-colors duration-200">Please log in to edit your profile.</p>
           <Link href="/login" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors duration-200">
             Go to Login
           </Link>
@@ -124,10 +124,10 @@ export default function EditProfilePage() {
           </Link>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg transition-colors duration-200">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-600 transition-colors duration-200">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-200">Edit Profile</h1>
-            <p className="text-gray-600 dark:text-gray-300 mt-1 transition-colors duration-200">Update your personal information and preferences</p>
+        <div className="bg-card shadow-sm rounded-lg transition-colors duration-200">
+          <div className="px-6 py-4 border-b border-border transition-colors duration-200">
+            <h1 className="text-2xl font-bold text-foreground transition-colors duration-200">Edit Profile</h1>
+            <p className="text-muted-foreground mt-1 transition-colors duration-200">Update your personal information and preferences</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -145,7 +145,7 @@ export default function EditProfilePage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
+                <label htmlFor="first_name" className="block text-sm font-medium text-foreground mb-2 transition-colors duration-200">
                   First Name *
                 </label>
                 <input
@@ -155,12 +155,12 @@ export default function EditProfilePage() {
                   required
                   value={form.first_name}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground placeholder:text-muted-foreground transition-colors duration-200"
                 />
               </div>
 
               <div>
-                <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
+                <label htmlFor="last_name" className="block text-sm font-medium text-foreground mb-2 transition-colors duration-200">
                   Last Name *
                 </label>
                 <input
@@ -170,13 +170,13 @@ export default function EditProfilePage() {
                   required
                   value={form.last_name}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground placeholder:text-muted-foreground transition-colors duration-200"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="institution" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
+              <label htmlFor="institution" className="block text-sm font-medium text-foreground mb-2 transition-colors duration-200">
                 Institution / Organization
               </label>
               <input
@@ -186,12 +186,12 @@ export default function EditProfilePage() {
                 value={form.institution}
                 onChange={handleChange}
                 placeholder="e.g., University of Example, Research Institute"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground placeholder:text-muted-foreground transition-colors duration-200"
               />
             </div>
 
             <div>
-              <label htmlFor="field_of_study" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
+              <label htmlFor="field_of_study" className="block text-sm font-medium text-foreground mb-2 transition-colors duration-200">
                 Field of Study / Research Area
               </label>
               <input
@@ -201,12 +201,12 @@ export default function EditProfilePage() {
                 value={form.field_of_study}
                 onChange={handleChange}
                 placeholder="e.g., Computer Science, Biology, Psychology"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground placeholder:text-muted-foreground transition-colors duration-200"
               />
             </div>
 
             <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
+              <label htmlFor="bio" className="block text-sm font-medium text-foreground mb-2 transition-colors duration-200">
                 Bio / About Me
               </label>
               <textarea
@@ -216,17 +216,17 @@ export default function EditProfilePage() {
                 value={form.bio}
                 onChange={handleChange}
                 placeholder="Tell others about yourself, your research interests, and what you're working on..."
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none transition-colors duration-200"
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground placeholder:text-muted-foreground resize-none transition-colors duration-200"
               />
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors duration-200">
+              <p className="text-sm text-muted-foreground mt-1 transition-colors duration-200">
                 {form.bio.length}/500 characters
               </p>
             </div>
 
-            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-600 transition-colors duration-200">
+            <div className="flex justify-end space-x-4 pt-6 border-t border-border transition-colors duration-200">
               <Link
                 href={`/profile/${user.id || 'me'}`}
-                className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+                className="px-6 py-2 border border-border text-foreground rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
               >
                 Cancel
               </Link>

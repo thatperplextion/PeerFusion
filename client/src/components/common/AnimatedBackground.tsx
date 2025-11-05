@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -41,14 +44,21 @@ export default function AnimatedBackground() {
         this.speedX = (Math.random() - 0.5) * 0.4;
         this.speedY = (Math.random() - 0.5) * 0.4;
         
-        // Enhanced dark color palette with subtle teal hints
-        const colors = [
-          'rgba(40, 40, 45, 0.18)',      // Dark grey
-          'rgba(35, 45, 50, 0.16)',      // Dark slate blue
-          'rgba(30, 35, 40, 0.2)',       // Charcoal
-          'rgba(25, 30, 35, 0.17)',      // Deep grey
-          'rgba(20, 35, 40, 0.19)',      // Dark teal hint
-          'rgba(45, 50, 55, 0.15)',      // Medium grey
+        // Dynamic color palette based on theme
+        const colors = isDark ? [
+          'rgba(40, 40, 45, 0.12)',      // Dark grey (reduced opacity)
+          'rgba(35, 45, 50, 0.10)',      // Dark slate blue
+          'rgba(30, 35, 40, 0.14)',      // Charcoal
+          'rgba(25, 30, 35, 0.11)',      // Deep grey
+          'rgba(20, 35, 40, 0.13)',      // Dark teal hint
+          'rgba(45, 50, 55, 0.09)',      // Medium grey
+        ] : [
+          'rgba(200, 210, 220, 0.08)',   // Light grey
+          'rgba(180, 200, 210, 0.07)',   // Light blue-grey
+          'rgba(190, 200, 205, 0.09)',   // Light slate
+          'rgba(210, 220, 225, 0.06)',   // Very light grey
+          'rgba(170, 190, 200, 0.08)',   // Light teal hint
+          'rgba(195, 205, 215, 0.07)',   // Pale grey
         ];
         this.baseColor = colors[Math.floor(Math.random() * colors.length)];
         this.opacity = Math.random() * 0.5 + 0.2;
@@ -128,11 +138,11 @@ export default function AnimatedBackground() {
         const maxDistance = 400;
         
         if (distance < maxDistance) {
-          const opacity = (1 - distance / maxDistance) * 0.15;
+          const opacity = (1 - distance / maxDistance) * (isDark ? 0.10 : 0.06);
           
           ctx.save();
-          ctx.strokeStyle = `rgba(16, 163, 127, ${opacity})`;
-          ctx.lineWidth = 1;
+          ctx.strokeStyle = isDark ? `rgba(16, 185, 129, ${opacity})` : `rgba(16, 163, 127, ${opacity})`;
+          ctx.lineWidth = 0.8;
           ctx.beginPath();
           ctx.moveTo(p1.x, p1.y);
           ctx.lineTo(p2.x, p2.y);
@@ -153,8 +163,8 @@ export default function AnimatedBackground() {
     // Animation loop with enhanced effects
     let animationId: number;
     const animate = () => {
-      // Fade effect instead of clear for trails
-      ctx.fillStyle = 'rgba(33, 33, 33, 0.05)';
+      // Fade effect instead of clear for trails - theme aware
+      ctx.fillStyle = isDark ? 'rgba(17, 24, 39, 0.05)' : 'rgba(250, 250, 250, 0.08)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Draw connections between particles
@@ -179,7 +189,7 @@ export default function AnimatedBackground() {
       window.removeEventListener('resize', setCanvasSize);
       cancelAnimationFrame(animationId);
     };
-  }, []);
+  }, [theme, isDark]);
 
   return (
     <canvas

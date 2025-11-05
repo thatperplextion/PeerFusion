@@ -151,7 +151,7 @@ export default function ProjectsPage() {
 
   return (
     <motion.div 
-      className="min-h-screen bg-background py-8"
+      className="min-h-screen py-8"
       initial="hidden"
       animate="visible"
       variants={containerVariants}

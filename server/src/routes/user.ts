@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { pool } from '../db';
+import { supabase } from '../supabase';
 import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
@@ -19,19 +19,19 @@ router.get('/:id', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
     
-    const result = await pool.query(
-      `SELECT id, email, first_name, last_name, bio, institution, field_of_study, avatar, created_at 
-       FROM users WHERE id = ?`,
-      [userId]
-    );
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id, email, first_name, last_name, bio, institution, field_of_study, avatar, created_at')
+      .eq('id', userId)
+      .single();
     
-    if (result.rows.length === 0) {
+    if (error || !user) {
       console.log('❌ User not found for ID:', userId);
       return res.status(404).json({ error: 'User not found' });
     }
     
     console.log('✅ User profile fetched successfully');
-    res.json(result.rows[0]);
+    res.json(user);
   } catch (err) {
     console.error('❌ Error fetching user profile:', err);
     res.status(500).json({ error: 'Failed to fetch user profile' });
@@ -51,25 +51,19 @@ router.put('/profile', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'First name and last name are required' });
     }
     
-    await pool.query(
-      `UPDATE users 
-       SET first_name = ?, last_name = ?, bio = ?, institution = ?, field_of_study = ?
-       WHERE id = ?`,
-      [first_name, last_name, bio, institution, field_of_study, userId]
-    );
+    const { data: user, error } = await supabase
+      .from('users')
+      .update({ first_name, last_name, bio, institution, field_of_study })
+      .eq('id', userId)
+      .select('id, email, first_name, last_name, bio, institution, field_of_study, created_at')
+      .single();
 
-    // Fetch updated row
-    const fetched = await pool.query(
-      `SELECT id, email, first_name, last_name, bio, institution, field_of_study, created_at FROM users WHERE id = ?`,
-      [userId]
-    );
-
-    if (fetched.rows.length === 0) {
+    if (error || !user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
     console.log('✅ Profile updated successfully');
-    res.json(fetched.rows[0]);
+    res.json(user);
   } catch (err) {
     console.error('❌ Error updating profile:', err);
     res.status(500).json({ error: 'Failed to update profile' });
@@ -97,27 +91,28 @@ router.post('/skills', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Skill name and category are required' });
     }
 
-    const insertResult = await pool.query(
-      `INSERT INTO user_skills 
-       (user_id, skill_name, category, proficiency_level, description, years_of_experience, willing_to_mentor, willing_to_collaborate) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        userId,
+    const { data: skill, error } = await supabase
+      .from('skills')
+      .insert([{
+        user_id: userId,
         skill_name,
         category,
-        proficiency_level || 'intermediate',
-        description || null,
-        years_of_experience || null,
-        willing_to_mentor || false,
-        willing_to_collaborate || false
-      ]
-    );
+        proficiency_level: proficiency_level || 3,
+        description: description || null,
+        years_of_experience: years_of_experience || null,
+        willing_to_mentor: willing_to_mentor || false,
+        willing_to_collaborate: willing_to_collaborate || false
+      }])
+      .select()
+      .single();
 
-    const insertedId = insertResult.insertId;
-    const fetched = await pool.query('SELECT * FROM user_skills WHERE id = ?', [insertedId]);
+    if (error) {
+      console.error('❌ Error adding skill:', error);
+      return res.status(500).json({ error: 'Failed to add skill' });
+    }
 
     console.log('✅ Skill added successfully');
-    res.status(201).json(fetched.rows[0]);
+    res.status(201).json(skill);
   } catch (err) {
     console.error('❌ Error adding skill:', err);
     res.status(500).json({ error: 'Failed to add skill' });
@@ -131,13 +126,19 @@ router.get('/:id/skills', authenticateToken, async (req, res) => {
 
     console.log('🎯 Fetching skills for user ID:', userId);
 
-    const result = await pool.query(
-      'SELECT * FROM user_skills WHERE user_id = ? ORDER BY created_at DESC',
-      [userId]
-    );
+    const { data: skills, error } = await supabase
+      .from('skills')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('❌ Error fetching skills:', error);
+      return res.status(500).json({ error: 'Failed to fetch skills' });
+    }
 
     console.log('✅ Skills fetched successfully');
-    res.json(result.rows);
+    res.json(skills || []);
   } catch (err) {
     console.error('❌ Error fetching skills:', err);
     res.status(500).json({ error: 'Failed to fetch skills' });
@@ -164,21 +165,27 @@ router.put('/settings', authenticateToken, async (req, res) => {
 
     console.log('⚙️  Updating settings for user ID:', userId);
 
-    // Update user profile fields if provided
-    if (location || linkedin_url || github_url || scholar_url || orcid || website_url || phone || is_profile_public !== undefined) {
-      await pool.query(
-        `UPDATE users 
-         SET location = COALESCE(?, location),
-             linkedin_url = COALESCE(?, linkedin_url),
-             github_url = COALESCE(?, github_url),
-             scholar_url = COALESCE(?, scholar_url),
-             orcid = COALESCE(?, orcid),
-             website_url = COALESCE(?, website_url),
-             phone = COALESCE(?, phone),
-             is_profile_public = COALESCE(?, is_profile_public)
-         WHERE id = ?`,
-        [location, linkedin_url, github_url, scholar_url, orcid, website_url, phone, is_profile_public, userId]
-      );
+    // Build update object with only provided fields
+    const updateData: any = {};
+    if (location !== undefined) updateData.location = location;
+    if (linkedin_url !== undefined) updateData.linkedin_url = linkedin_url;
+    if (github_url !== undefined) updateData.github_url = github_url;
+    if (scholar_url !== undefined) updateData.scholar_url = scholar_url;
+    if (orcid !== undefined) updateData.orcid = orcid;
+    if (website_url !== undefined) updateData.website_url = website_url;
+    if (phone !== undefined) updateData.phone = phone;
+    if (is_profile_public !== undefined) updateData.is_profile_public = is_profile_public;
+
+    if (Object.keys(updateData).length > 0) {
+      const { error } = await supabase
+        .from('users')
+        .update(updateData)
+        .eq('id', userId);
+
+      if (error) {
+        console.error('❌ Error updating settings:', error);
+        return res.status(500).json({ error: 'Failed to update settings' });
+      }
     }
 
     res.json({ 
@@ -195,24 +202,21 @@ router.put('/settings', authenticateToken, async (req, res) => {
   }
 });
 
-// Get user publications
+// Get user publications (Note: publications table needs to be added to schema)
 router.get('/:id/publications', authenticateToken, async (req, res) => {
   try {
     const userId = req.params.id === 'me' ? (req as any).user.id : parseInt(req.params.id);
 
-    const result = await pool.query(
-      'SELECT * FROM publications WHERE user_id = ? ORDER BY year DESC, created_at DESC',
-      [userId]
-    );
-
-    res.json(result.rows);
+    // Note: publications table is not in the current schema
+    // This is a placeholder - you'll need to add the publications table
+    res.json([]);
   } catch (err) {
     console.error('Error fetching publications:', err);
     res.status(500).json({ error: 'Failed to fetch publications' });
   }
 });
 
-// Add publication
+// Add publication (Note: publications table needs to be added to schema)
 router.post('/publications', authenticateToken, async (req, res) => {
   try {
     const userId = (req as any).user.id;
@@ -222,16 +226,9 @@ router.post('/publications', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Title and year are required' });
     }
 
-    const insertResult = await pool.query(
-      `INSERT INTO publications (user_id, title, authors, journal, year, doi, url, citation_count)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userId, title, authors, journal, year, doi || null, url || null, citation_count || 0]
-    );
-
-    const insertedId = insertResult.insertId;
-    const fetched = await pool.query('SELECT * FROM publications WHERE id = ?', [insertedId]);
-
-    res.status(201).json(fetched.rows[0]);
+    // Note: publications table is not in the current schema
+    // This is a placeholder
+    res.status(501).json({ error: 'Publications feature not yet implemented' });
   } catch (err) {
     console.error('Error adding publication:', err);
     res.status(500).json({ error: 'Failed to add publication' });
@@ -242,16 +239,20 @@ router.post('/publications', authenticateToken, async (req, res) => {
 router.post('/skills/:skillId/endorse', authenticateToken, async (req, res) => {
   try {
     const endorserId = (req as any).user.id;
-    const userSkillId = parseInt(req.params.skillId);
+    const skillId = parseInt(req.params.skillId);
 
     // Check if skill exists and get the user_id
-    const skillCheck = await pool.query('SELECT user_id FROM user_skills WHERE id = ?', [userSkillId]);
+    const { data: skill, error: skillError } = await supabase
+      .from('skills')
+      .select('user_id')
+      .eq('id', skillId)
+      .single();
     
-    if (skillCheck.rows.length === 0) {
+    if (skillError || !skill) {
       return res.status(404).json({ error: 'Skill not found' });
     }
 
-    const skillOwnerId = (skillCheck.rows[0] as any).user_id;
+    const skillOwnerId = skill.user_id;
 
     // Can't endorse your own skill
     if (skillOwnerId === endorserId) {
@@ -259,30 +260,49 @@ router.post('/skills/:skillId/endorse', authenticateToken, async (req, res) => {
     }
 
     // Check if already endorsed
-    const existingEndorsement = await pool.query(
-      'SELECT * FROM skill_endorsements WHERE user_skill_id = ? AND endorser_id = ?',
-      [userSkillId, endorserId]
-    );
+    const { data: existingEndorsement } = await supabase
+      .from('skill_endorsements')
+      .select('*')
+      .eq('skill_id', skillId)
+      .eq('endorser_id', endorserId)
+      .single();
 
-    if (existingEndorsement.rows.length > 0) {
+    if (existingEndorsement) {
       return res.status(400).json({ error: 'Already endorsed this skill' });
     }
 
     // Create endorsement
-    await pool.query(
-      'INSERT INTO skill_endorsements (user_skill_id, endorser_id) VALUES (?, ?)',
-      [userSkillId, endorserId]
-    );
+    const { error: endorseError } = await supabase
+      .from('skill_endorsements')
+      .insert([{ skill_id: skillId, endorser_id: endorserId }]);
 
-    // Create notification
-    const endorserInfo = await pool.query('SELECT first_name, last_name FROM users WHERE id = ?', [endorserId]);
-    const endorserName = `${(endorserInfo.rows[0] as any).first_name} ${(endorserInfo.rows[0] as any).last_name}`;
+    if (endorseError) {
+      console.error('❌ Error creating endorsement:', endorseError);
+      return res.status(500).json({ error: 'Failed to endorse skill' });
+    }
+
+    // Get endorser info for notification
+    const { data: endorser } = await supabase
+      .from('users')
+      .select('first_name, last_name')
+      .eq('id', endorserId)
+      .single();
     
-    await pool.query(
-      `INSERT INTO notifications (user_id, type, title, message, link)
-       VALUES (?, 'skill_endorsement', 'Skill Endorsement', ?, ?)`,
-      [skillOwnerId, `${endorserName} endorsed your skill`, `/profile/${skillOwnerId}`]
-    );
+    if (endorser) {
+      const endorserName = `${endorser.first_name} ${endorser.last_name}`;
+      
+      // Create notification
+      await supabase
+        .from('notifications')
+        .insert([{
+          user_id: skillOwnerId,
+          type: 'skill_endorsement',
+          title: 'Skill Endorsement',
+          message: `${endorserName} endorsed your skill`,
+          reference_id: skillId,
+          reference_type: 'skill'
+        }]);
+    }
 
     res.json({ message: 'Skill endorsed successfully' });
   } catch (err) {
@@ -294,18 +314,27 @@ router.post('/skills/:skillId/endorse', authenticateToken, async (req, res) => {
 // Get skill endorsements
 router.get('/skills/:skillId/endorsements', authenticateToken, async (req, res) => {
   try {
-    const userSkillId = parseInt(req.params.skillId);
+    const skillId = parseInt(req.params.skillId);
 
-    const result = await pool.query(
-      `SELECT se.*, u.first_name, u.last_name, u.avatar 
-       FROM skill_endorsements se
-       JOIN users u ON se.endorser_id = u.id
-       WHERE se.user_skill_id = ?
-       ORDER BY se.created_at DESC`,
-      [userSkillId]
-    );
+    const { data: endorsements, error } = await supabase
+      .from('skill_endorsements')
+      .select(`
+        *,
+        users!skill_endorsements_endorser_id_fkey (
+          first_name,
+          last_name,
+          avatar
+        )
+      `)
+      .eq('skill_id', skillId)
+      .order('created_at', { ascending: false });
 
-    res.json(result.rows);
+    if (error) {
+      console.error('❌ Error fetching endorsements:', error);
+      return res.status(500).json({ error: 'Failed to fetch endorsements' });
+    }
+
+    res.json(endorsements || []);
   } catch (err) {
     console.error('Error fetching endorsements:', err);
     res.status(500).json({ error: 'Failed to fetch endorsements' });
@@ -317,48 +346,59 @@ router.get('/:id/stats', authenticateToken, async (req, res) => {
   try {
     const userId = req.params.id === 'me' ? (req as any).user.id : parseInt(req.params.id);
 
-    // Get project count
-    const projectCount = await pool.query('SELECT COUNT(*) as count FROM projects WHERE user_id = ?', [userId]);
+    // Get project count (from project_members table)
+    const { count: projectCount } = await supabase
+      .from('project_members')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId);
     
     // Get skill count
-    const skillCount = await pool.query('SELECT COUNT(*) as count FROM user_skills WHERE user_id = ?', [userId]);
+    const { count: skillCount } = await supabase
+      .from('skills')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId);
     
     // Get total endorsements received
-    const endorsementCount = await pool.query(
-      `SELECT COUNT(*) as count FROM skill_endorsements se
-       JOIN user_skills us ON se.user_skill_id = us.id
-       WHERE us.user_id = ?`,
-      [userId]
-    );
+    const { data: userSkills } = await supabase
+      .from('skills')
+      .select('id')
+      .eq('user_id', userId);
     
-    // Get publication count
-    const publicationCount = await pool.query('SELECT COUNT(*) as count FROM publications WHERE user_id = ?', [userId]);
+    let endorsementCount = 0;
+    if (userSkills && userSkills.length > 0) {
+      const skillIds = userSkills.map(s => s.id);
+      const { count } = await supabase
+        .from('skill_endorsements')
+        .select('*', { count: 'exact', head: true })
+        .in('skill_id', skillIds);
+      endorsementCount = count || 0;
+    }
     
-    // Get profile views
-    const viewsCount = await pool.query(
-      'SELECT profile_views FROM users WHERE id = ?',
-      [userId]
-    );
+    // Get publication count (placeholder - table doesn't exist yet)
+    const publicationCount = 0;
+    
+    // Get profile views (if the column exists)
+    const { data: userData } = await supabase
+      .from('users')
+      .select('id')
+      .eq('id', userId)
+      .single();
+
+    const profileViews = 0; // Placeholder - profile_views column doesn't exist in schema
 
     // Track profile view if viewing another user's profile
     const viewerId = (req as any).user.id;
     if (viewerId !== userId) {
-      // Increment view count
-      await pool.query('UPDATE users SET profile_views = profile_views + 1 WHERE id = ?', [userId]);
-      
-      // Record view
-      await pool.query(
-        'INSERT INTO profile_views (profile_user_id, viewer_user_id) VALUES (?, ?)',
-        [userId, viewerId]
-      );
+      // Note: profile_views tracking not implemented in current schema
+      // You would need to add a profile_views table or column
     }
 
     res.json({
-      projects: (projectCount.rows[0] as any).count,
-      skills: (skillCount.rows[0] as any).count,
-      endorsements: (endorsementCount.rows[0] as any).count,
-      publications: (publicationCount.rows[0] as any).count,
-      profileViews: (viewsCount.rows[0] as any).profile_views || 0
+      projects: projectCount || 0,
+      skills: skillCount || 0,
+      endorsements: endorsementCount,
+      publications: publicationCount,
+      profileViews: profileViews
     });
   } catch (err) {
     console.error('Error fetching user stats:', err);

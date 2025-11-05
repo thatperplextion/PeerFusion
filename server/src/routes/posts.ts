@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { pool } from '../db';
+import { supabase } from '../supabase';
 import { authenticateToken, AuthRequest } from '../middleware/authMiddleware';
 
 const router = Router();
@@ -9,31 +9,66 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user!.id;
     
-    // Get posts from user's connections and own posts
-    const result = await pool.query(`
-      SELECT 
-        p.*,
-        u.first_name,
-        u.last_name,
-        u.avatar,
-        (SELECT COUNT(*) FROM post_likes WHERE post_id = p.id) as like_count,
-        (SELECT COUNT(*) FROM post_comments WHERE post_id = p.id) as comment_count,
-        EXISTS(SELECT 1 FROM post_likes WHERE post_id = p.id AND user_id = ?) as user_liked
-      FROM posts p
-      JOIN users u ON p.user_id = u.id
-      WHERE p.user_id = ? 
-        OR p.user_id IN (
-          SELECT addressee_id FROM connections 
-          WHERE requester_id = ? AND status = 'accepted'
-          UNION
-          SELECT requester_id FROM connections 
-          WHERE addressee_id = ? AND status = 'accepted'
-        )
-      ORDER BY p.created_at DESC
-      LIMIT 50
-    `, [userId, userId, userId, userId]);
+    // Get user's connections
+    const { data: connections } = await supabase
+      .from('connections')
+      .select('requester_id, addressee_id')
+      .eq('status', 'accepted')
+      .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`);
 
-    res.json(result.rows);
+    const connectionIds = new Set([userId]);
+    connections?.forEach(conn => {
+      connectionIds.add(conn.requester_id === userId ? conn.addressee_id : conn.requester_id);
+    });
+
+    // Get posts from connections
+    const { data: posts, error } = await supabase
+      .from('posts')
+      .select(`
+        *,
+        users!posts_user_id_fkey (
+          first_name,
+          last_name,
+          avatar
+        )
+      `)
+      .in('user_id', Array.from(connectionIds))
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) {
+      console.error('Error fetching posts:', error);
+      return res.status(500).json({ error: 'Failed to fetch posts' });
+    }
+
+    // Get like counts, comment counts, and user likes for each post
+    const enrichedPosts = await Promise.all((posts || []).map(async (post) => {
+      const { count: likeCount } = await supabase
+        .from('post_likes')
+        .select('*', { count: 'exact', head: true })
+        .eq('post_id', post.id);
+
+      const { count: commentCount } = await supabase
+        .from('post_comments')
+        .select('*', { count: 'exact', head: true })
+        .eq('post_id', post.id);
+
+      const { data: userLike } = await supabase
+        .from('post_likes')
+        .select('id')
+        .eq('post_id', post.id)
+        .eq('user_id', userId)
+        .single();
+
+      return {
+        ...post,
+        like_count: likeCount || 0,
+        comment_count: commentCount || 0,
+        user_liked: !!userLike
+      };
+    }));
+
+    res.json(enrichedPosts);
   } catch (error) {
     console.error('Error fetching posts:', error);
     res.status(500).json({ error: 'Failed to fetch posts' });
@@ -50,22 +85,36 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ error: 'Content is required' });
     }
 
-    const result = await pool.query(
-      `INSERT INTO posts (user_id, content, image_url, post_type) 
-       VALUES (?, ?, ?, ?)`,
-      [userId, content, image_url || null, post_type || 'update']
-    );
+    const { data: post, error } = await supabase
+      .from('posts')
+      .insert([{
+        user_id: userId,
+        content,
+        image_url: image_url || null,
+        post_type: post_type || 'update'
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating post:', error);
+      return res.status(500).json({ error: 'Failed to create post' });
+    }
 
     // Create activity
-    await pool.query(
-      `INSERT INTO activities (user_id, activity_type, description, reference_id, reference_type) 
-       VALUES (?, 'post', ?, ?, 'post')`,
-      [userId, `Posted: ${content.substring(0, 100)}...`, result.insertId]
-    );
+    await supabase
+      .from('activities')
+      .insert([{
+        user_id: userId,
+        activity_type: 'post',
+        description: `Posted: ${content.substring(0, 100)}...`,
+        reference_id: post.id,
+        reference_type: 'post'
+      }]);
 
     res.status(201).json({ 
       message: 'Post created successfully',
-      postId: result.insertId 
+      postId: post.id
     });
   } catch (error) {
     console.error('Error creating post:', error);
@@ -79,10 +128,14 @@ router.post('/:postId/like', authenticateToken, async (req: AuthRequest, res: Re
     const userId = req.user!.id;
     const { postId } = req.params;
 
-    await pool.query(
-      `INSERT IGNORE INTO post_likes (post_id, user_id) VALUES (?, ?)`,
-      [postId, userId]
-    );
+    const { error } = await supabase
+      .from('post_likes')
+      .insert([{ post_id: parseInt(postId), user_id: userId }]);
+
+    if (error && !error.message.includes('duplicate')) {
+      console.error('Error liking post:', error);
+      return res.status(500).json({ error: 'Failed to like post' });
+    }
 
     res.json({ message: 'Post liked successfully' });
   } catch (error) {
@@ -97,10 +150,16 @@ router.delete('/:postId/like', authenticateToken, async (req: AuthRequest, res: 
     const userId = req.user!.id;
     const { postId } = req.params;
 
-    await pool.query(
-      `DELETE FROM post_likes WHERE post_id = ? AND user_id = ?`,
-      [postId, userId]
-    );
+    const { error } = await supabase
+      .from('post_likes')
+      .delete()
+      .eq('post_id', parseInt(postId))
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error('Error unliking post:', error);
+      return res.status(500).json({ error: 'Failed to unlike post' });
+    }
 
     res.json({ message: 'Post unliked successfully' });
   } catch (error) {
@@ -114,19 +173,25 @@ router.get('/:postId/comments', authenticateToken, async (req: AuthRequest, res:
   try {
     const { postId } = req.params;
 
-    const result = await pool.query(`
-      SELECT 
-        c.*,
-        u.first_name,
-        u.last_name,
-        u.avatar
-      FROM post_comments c
-      JOIN users u ON c.user_id = u.id
-      WHERE c.post_id = ?
-      ORDER BY c.created_at ASC
-    `, [postId]);
+    const { data: comments, error } = await supabase
+      .from('post_comments')
+      .select(`
+        *,
+        users!post_comments_user_id_fkey (
+          first_name,
+          last_name,
+          avatar
+        )
+      `)
+      .eq('post_id', parseInt(postId))
+      .order('created_at', { ascending: true });
 
-    res.json(result.rows);
+    if (error) {
+      console.error('Error fetching comments:', error);
+      return res.status(500).json({ error: 'Failed to fetch comments' });
+    }
+
+    res.json(comments || []);
   } catch (error) {
     console.error('Error fetching comments:', error);
     res.status(500).json({ error: 'Failed to fetch comments' });
@@ -144,14 +209,24 @@ router.post('/:postId/comments', authenticateToken, async (req: AuthRequest, res
       return res.status(400).json({ error: 'Comment content is required' });
     }
 
-    const result = await pool.query(
-      `INSERT INTO post_comments (post_id, user_id, content) VALUES (?, ?, ?)`,
-      [postId, userId, content]
-    );
+    const { data: comment, error } = await supabase
+      .from('post_comments')
+      .insert([{
+        post_id: parseInt(postId),
+        user_id: userId,
+        content
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding comment:', error);
+      return res.status(500).json({ error: 'Failed to add comment' });
+    }
 
     res.status(201).json({ 
       message: 'Comment added successfully',
-      commentId: result.insertId 
+      commentId: comment.id
     });
   } catch (error) {
     console.error('Error adding comment:', error);
@@ -166,20 +241,29 @@ router.delete('/:postId', authenticateToken, async (req: AuthRequest, res: Respo
     const { postId } = req.params;
 
     // Check if user owns the post
-    const checkResult = await pool.query(
-      `SELECT user_id FROM posts WHERE id = ?`,
-      [postId]
-    );
+    const { data: post, error: fetchError } = await supabase
+      .from('posts')
+      .select('user_id')
+      .eq('id', parseInt(postId))
+      .single();
 
-    if (checkResult.rows.length === 0) {
+    if (fetchError || !post) {
       return res.status(404).json({ error: 'Post not found' });
     }
 
-    if ((checkResult.rows[0] as any).user_id !== userId) {
+    if (post.user_id !== userId) {
       return res.status(403).json({ error: 'Not authorized to delete this post' });
     }
 
-    await pool.query(`DELETE FROM posts WHERE id = ?`, [postId]);
+    const { error } = await supabase
+      .from('posts')
+      .delete()
+      .eq('id', parseInt(postId));
+
+    if (error) {
+      console.error('Error deleting post:', error);
+      return res.status(500).json({ error: 'Failed to delete post' });
+    }
 
     res.json({ message: 'Post deleted successfully' });
   } catch (error) {

@@ -63,10 +63,10 @@ export default function HelpPage() {
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
             How can we help you?
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+          <p className="text-lg text-muted-foreground mb-8">
             Find answers to common questions and learn how to use PeerFusion
           </p>
 
@@ -78,7 +78,7 @@ export default function HelpPage() {
                 placeholder="Search for help..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-6 py-4 pl-12 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-lg"
+                className="w-full px-6 py-4 pl-12 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground text-lg"
               />
               <svg
                 className="absolute left-4 top-5 h-6 w-6 text-gray-400"
@@ -100,8 +100,8 @@ export default function HelpPage() {
         {/* Help Topics */}
         <div className="space-y-8">
           {filteredTopics.map((topic, idx) => (
-            <div key={idx} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+            <div key={idx} className="bg-card rounded-lg shadow-md p-6">
+              <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center">
                 <span className="text-3xl mr-3">{topic.icon}</span>
                 {topic.category}
               </h2>
@@ -109,12 +109,12 @@ export default function HelpPage() {
                 {topic.articles.map((article, articleIdx) => (
                   <button
                     key={articleIdx}
-                    className="text-left p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 group"
+                    className="text-left p-4 rounded-lg border border-border hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 group"
                   >
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                    <h3 className="font-semibold text-foreground mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400">
                       {article.title}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       {article.description}
                     </p>
                   </button>
@@ -125,7 +125,7 @@ export default function HelpPage() {
 
           {filteredTopics.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-600 dark:text-gray-400 text-lg">
+              <p className="text-muted-foreground text-lg">
                 No help articles found matching "{searchQuery}"
               </p>
               <button

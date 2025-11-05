@@ -27,6 +27,18 @@ export default function ChatButton() {
     return () => clearInterval(interval);
   }, [isAuthenticated, user]);
 
+  // Prevent body scroll when chat is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [isOpen]);
+
   const loadUnreadCount = async () => {
     try {
       const { unreadCount } = await messageService.getUnreadCount();
@@ -47,7 +59,7 @@ export default function ChatButton() {
       {/* Chat Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+        className="relative p-2 text-muted-foreground hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg "
         title="Messages"
       >
         <MessageCircle className="w-6 h-6" />
@@ -63,20 +75,20 @@ export default function ChatButton() {
         <>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] bg-black/60"
             onClick={() => setIsOpen(false)}
           />
           
           {/* Side Panel */}
           <div 
-            className="fixed right-0 top-0 bottom-0 w-full sm:w-[650px] md:w-[750px] lg:w-[850px] z-50 bg-[#2a2a2a] shadow-2xl border-l border-white/10 animate-slide-in-right flex flex-col"
+            className="fixed right-0 top-0 bottom-0 w-full sm:w-[650px] md:w-[750px] lg:w-[850px] z-[101] bg-card shadow-2xl border-l border-border flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex-shrink-0 border-b border-white/10 bg-[#1f1f1f]">
+            <div className="flex-shrink-0 border-b border-border bg-muted">
               <div className="flex justify-between items-center p-4">
                 <div className="flex items-center gap-3">
-                  <h2 className="text-xl font-bold text-white">Messages</h2>
+                  <h2 className="text-xl font-bold text-foreground">Messages</h2>
                   <span className="text-xs px-2 py-1 bg-primary/20 text-primary rounded-full font-medium">
                     {unreadCount} new
                   </span>
@@ -84,30 +96,30 @@ export default function ChatButton() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => {/* TODO: New message */}}
-                    className="p-2 hover:bg-white/10 rounded-lg transition-colors group"
+                    className="p-2 hover:bg-muted rounded-lg  group"
                     title="New message"
                   >
-                    <Edit className="w-5 h-5 text-gray-300 group-hover:text-primary transition-colors" />
+                    <Edit className="w-5 h-5 text-muted-foreground group-hover:text-primary " />
                   </button>
                   <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className={`p-2 hover:bg-white/10 rounded-lg transition-colors ${showFilters ? 'bg-primary/20' : ''}`}
+                    className={`p-2 hover:bg-muted rounded-lg  ${showFilters ? 'bg-primary/20' : ''}`}
                     title="Filters"
                   >
-                    <Filter className="w-5 h-5 text-gray-300" />
+                    <Filter className="w-5 h-5 text-muted-foreground" />
                   </button>
                   <button
                     onClick={() => {/* TODO: Settings */}}
-                    className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                    className="p-2 hover:bg-muted rounded-lg "
                     title="Settings"
                   >
-                    <Settings className="w-5 h-5 text-gray-300" />
+                    <Settings className="w-5 h-5 text-muted-foreground" />
                   </button>
                   <button
                     onClick={() => setIsOpen(false)}
-                    className="p-2 hover:bg-red-500/20 rounded-lg transition-colors group"
+                    className="p-2 hover:bg-destructive/20 rounded-lg  group"
                   >
-                    <X className="w-5 h-5 text-gray-300 group-hover:text-red-400 transition-colors" />
+                    <X className="w-5 h-5 text-muted-foreground group-hover:text-destructive " />
                   </button>
                 </div>
               </div>
@@ -121,7 +133,7 @@ export default function ChatButton() {
                     placeholder="Search conversations..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#1a1a1a] border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-white placeholder-gray-500"
+                    className="w-full pl-10 pr-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-foreground placeholder:text-muted-foreground"
                   />
                 </div>
               </div>
@@ -130,7 +142,7 @@ export default function ChatButton() {
               <div className="flex items-center gap-1 px-4 pb-3">
                 <button
                   onClick={() => setActiveTab('all')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg  ${
                     activeTab === 'all' 
                       ? 'bg-primary text-white' 
                       : 'text-gray-400 hover:bg-white/5'
@@ -141,7 +153,7 @@ export default function ChatButton() {
                 </button>
                 <button
                   onClick={() => setActiveTab('unread')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all relative ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg  relative ${
                     activeTab === 'unread' 
                       ? 'bg-primary text-white' 
                       : 'text-gray-400 hover:bg-white/5'
@@ -157,7 +169,7 @@ export default function ChatButton() {
                 </button>
                 <button
                   onClick={() => setActiveTab('starred')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg  ${
                     activeTab === 'starred' 
                       ? 'bg-primary text-white' 
                       : 'text-gray-400 hover:bg-white/5'
@@ -168,7 +180,7 @@ export default function ChatButton() {
                 </button>
                 <button
                   onClick={() => setActiveTab('archived')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg  ${
                     activeTab === 'archived' 
                       ? 'bg-primary text-white' 
                       : 'text-gray-400 hover:bg-white/5'
@@ -181,28 +193,28 @@ export default function ChatButton() {
 
               {/* Filters Dropdown */}
               {showFilters && (
-                <div className="px-4 pb-3 border-t border-white/10 pt-3 bg-[#1a1a1a]">
+                <div className="px-4 pb-3 border-t border-border pt-3 bg-muted">
                   <div className="flex flex-wrap gap-2">
-                    <button className="px-3 py-1.5 text-xs text-gray-300 bg-[#2a2a2a] border border-white/10 rounded-full hover:bg-primary hover:text-white hover:border-primary transition-all">
+                    <button className="px-3 py-1.5 text-xs text-muted-foreground bg-card border border-border rounded-full hover:bg-primary hover:text-white hover:border-primary ">
                       <Users className="w-3 h-3 inline mr-1" />
                       Group chats
                     </button>
-                    <button className="px-3 py-1.5 text-xs text-gray-300 bg-[#2a2a2a] border border-white/10 rounded-full hover:bg-primary hover:text-white hover:border-primary transition-all">
+                    <button className="px-3 py-1.5 text-xs text-muted-foreground bg-card border border-border rounded-full hover:bg-primary hover:text-white hover:border-primary ">
                       Media
                     </button>
-                    <button className="px-3 py-1.5 text-xs text-gray-300 bg-[#2a2a2a] border border-white/10 rounded-full hover:bg-primary hover:text-white hover:border-primary transition-all">
+                    <button className="px-3 py-1.5 text-xs text-muted-foreground bg-card border border-border rounded-full hover:bg-primary hover:text-white hover:border-primary ">
                       Links
                     </button>
-                    <button className="px-3 py-1.5 text-xs text-gray-300 bg-[#2a2a2a] border border-white/10 rounded-full hover:bg-primary hover:text-white hover:border-primary transition-all">
+                    <button className="px-3 py-1.5 text-xs text-muted-foreground bg-card border border-border rounded-full hover:bg-primary hover:text-white hover:border-primary ">
                       Files
                     </button>
-                    <button className="px-3 py-1.5 text-xs text-gray-300 bg-[#2a2a2a] border border-white/10 rounded-full hover:bg-primary hover:text-white hover:border-primary transition-all">
+                    <button className="px-3 py-1.5 text-xs text-muted-foreground bg-card border border-border rounded-full hover:bg-primary hover:text-white hover:border-primary ">
                       Today
                     </button>
-                    <button className="px-3 py-1.5 text-xs text-gray-300 bg-[#2a2a2a] border border-white/10 rounded-full hover:bg-primary hover:text-white hover:border-primary transition-all">
+                    <button className="px-3 py-1.5 text-xs text-muted-foreground bg-card border border-border rounded-full hover:bg-primary hover:text-white hover:border-primary ">
                       This week
                     </button>
-                    <button className="px-3 py-1.5 text-xs text-red-400 border border-red-500/30 rounded-full hover:bg-red-500 hover:text-white transition-all">
+                    <button className="px-3 py-1.5 text-xs text-destructive border border-destructive/30 rounded-full hover:bg-destructive hover:text-white ">
                       Clear filters
                     </button>
                   </div>
@@ -211,23 +223,23 @@ export default function ChatButton() {
             </div>
 
             {/* Chat Content */}
-            <div className="flex-1 overflow-hidden bg-[#232323]">
+            <div className="flex-1 overflow-hidden bg-background">
               <Chat 
                 onClose={() => setIsOpen(false)}
               />
             </div>
 
             {/* Footer - Quick Actions */}
-            <div className="flex-shrink-0 border-t border-white/10 bg-[#1f1f1f] px-4 py-3">
-              <div className="flex items-center justify-between text-xs text-gray-400">
+            <div className="flex-shrink-0 border-t border-border bg-muted px-4 py-3">
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <div className="flex items-center gap-4">
                   <span>{unreadCount} unread messages</span>
                   <span>•</span>
-                  <button className="hover:text-primary transition-colors">
+                  <button className="hover:text-primary ">
                     Mark all as read
                   </button>
                 </div>
-                <button className="hover:text-primary transition-colors flex items-center gap-1">
+                <button className="hover:text-primary  flex items-center gap-1">
                   <MoreVertical className="w-3 h-3" />
                   More options
                 </button>

@@ -130,10 +130,10 @@ export default function FAQPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
             Frequently Asked Questions
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+          <p className="text-lg text-muted-foreground mb-8">
             Quick answers to common questions about PeerFusion
           </p>
 
@@ -145,7 +145,7 @@ export default function FAQPage() {
                 placeholder="Search FAQs..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-6 py-3 pl-12 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                className="w-full px-6 py-3 pl-12 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground"
               />
               <svg
                 className="absolute left-4 top-4 h-5 w-5 text-gray-400"
@@ -167,8 +167,8 @@ export default function FAQPage() {
         {/* FAQ Categories */}
         <div className="space-y-8">
           {filteredFaqs.map((category, categoryIdx) => (
-            <div key={categoryIdx} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <div key={categoryIdx} className="bg-card rounded-lg shadow-md p-6">
+              <h2 className="text-2xl font-bold text-foreground mb-4">
                 {category.category}
               </h2>
               <div className="space-y-4">
@@ -179,13 +179,13 @@ export default function FAQPage() {
                   return (
                     <div
                       key={faqIdx}
-                      className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+                      className="border border-border rounded-lg overflow-hidden"
                     >
                       <button
                         onClick={() => toggleQuestion(globalIndex)}
                         className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                       >
-                        <span className="font-semibold text-gray-900 dark:text-white pr-4">
+                        <span className="font-semibold text-foreground pr-4">
                           {faq.question}
                         </span>
                         <svg
@@ -205,8 +205,8 @@ export default function FAQPage() {
                         </svg>
                       </button>
                       {isOpen && (
-                        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-200 dark:border-gray-700">
-                          <p className="text-gray-700 dark:text-gray-300">
+                        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700/30 border-t border-border">
+                          <p className="text-foreground">
                             {faq.answer}
                           </p>
                         </div>
@@ -219,8 +219,8 @@ export default function FAQPage() {
           ))}
 
           {filteredFaqs.length === 0 && (
-            <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-              <p className="text-gray-600 dark:text-gray-400 text-lg mb-4">
+            <div className="text-center py-12 bg-card rounded-lg shadow-md">
+              <p className="text-muted-foreground text-lg mb-4">
                 No FAQs found matching "{searchQuery}"
               </p>
               <button

@@ -65,10 +65,10 @@ export default function SettingsPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             Settings
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-muted-foreground">
             Manage your account preferences and notifications
           </p>
         </div>
@@ -85,22 +85,22 @@ export default function SettingsPage() {
         )}
 
         {/* Account Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <div className="bg-card rounded-lg shadow-sm p-6 mb-6">
+          <h2 className="text-xl font-semibold text-foreground mb-4">
             Account Information
           </h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Email
               </label>
-              <p className="text-gray-900 dark:text-white">{user.email}</p>
+              <p className="text-foreground">{user.email}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Name
               </label>
-              <p className="text-gray-900 dark:text-white">
+              <p className="text-foreground">
                 {user.first_name} {user.last_name}
               </p>
             </div>
@@ -114,15 +114,15 @@ export default function SettingsPage() {
         </div>
 
         {/* Notifications Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <div className="bg-card rounded-lg shadow-sm p-6 mb-6">
+          <h2 className="text-xl font-semibold text-foreground mb-4">
             Notifications
           </h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-gray-900 dark:text-white">Email Notifications</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Receive email updates about your activity</p>
+                <p className="font-medium text-foreground">Email Notifications</p>
+                <p className="text-sm text-muted-foreground">Receive email updates about your activity</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -137,8 +137,8 @@ export default function SettingsPage() {
 
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-gray-900 dark:text-white">Project Updates</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Get notified about project collaborations</p>
+                <p className="font-medium text-foreground">Project Updates</p>
+                <p className="text-sm text-muted-foreground">Get notified about project collaborations</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -153,8 +153,8 @@ export default function SettingsPage() {
 
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-gray-900 dark:text-white">Message Notifications</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Get notified about new messages</p>
+                <p className="font-medium text-foreground">Message Notifications</p>
+                <p className="text-sm text-muted-foreground">Get notified about new messages</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -169,8 +169,8 @@ export default function SettingsPage() {
 
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-gray-900 dark:text-white">Weekly Digest</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Receive a weekly summary of activity</p>
+                <p className="font-medium text-foreground">Weekly Digest</p>
+                <p className="text-sm text-muted-foreground">Receive a weekly summary of activity</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input

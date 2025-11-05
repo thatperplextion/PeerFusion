@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { pool } from '../db';
+import { supabase } from '../supabase';
 import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
@@ -18,29 +18,36 @@ router.get('/', authenticateToken, async (req, res) => {
     };
 
     if (searchType === 'users' || searchType === 'all') {
-      // Search users by name or email
-      const userResults = await pool.query(
-        `SELECT id, email, first_name, last_name, bio, institution, field_of_study 
-         FROM users 
-         WHERE first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR bio LIKE ?
-         LIMIT 20`,
-        [`%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`]
-      );
-      results.users = userResults.rows;
+      // Search users by name or email using ilike for case-insensitive search
+      const { data: users, error } = await supabase
+        .from('users')
+        .select('id, email, first_name, last_name, bio, institution, field_of_study, avatar')
+        .or(`first_name.ilike.%${searchQuery}%,last_name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%,bio.ilike.%${searchQuery}%`)
+        .limit(20);
+      
+      if (!error) {
+        results.users = users || [];
+      }
     }
 
     if (searchType === 'projects' || searchType === 'all') {
       // Search projects by title or description
-      const projectResults = await pool.query(
-        `SELECT p.*, u.first_name, u.last_name 
-         FROM projects p
-         JOIN users u ON p.user_id = u.id
-         WHERE p.title LIKE ? OR p.description LIKE ?
-         ORDER BY p.created_at DESC
-         LIMIT 20`,
-        [`%${searchQuery}%`, `%${searchQuery}%`]
-      );
-      results.projects = projectResults.rows;
+      const { data: projects, error } = await supabase
+        .from('projects')
+        .select(`
+          *,
+          users!projects_creator_id_fkey (
+            first_name,
+            last_name
+          )
+        `)
+        .or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      
+      if (!error) {
+        results.projects = projects || [];
+      }
     }
 
     console.log('✅ Search completed');

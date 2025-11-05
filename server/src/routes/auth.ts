@@ -1,8 +1,8 @@
-// server/src/routes/auth.ts - Fix login endpoint
+// server/src/routes/auth.ts - Authentication routes using Supabase
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { pool } from '../db';
+import { supabase } from '../supabase';
 import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
@@ -14,18 +14,6 @@ function createToken(userId: number) {
     throw new Error('JWT_SECRET is not defined');
   }
   return jwt.sign({ id: userId }, secret, { expiresIn: '7d' });
-}
-
-// Database operation wrapper to handle connection errors gracefully
-async function withDatabase<T>(operation: () => Promise<T>): Promise<T> {
-  try {
-    return await operation();
-  } catch (error: any) {
-    if (error.code === 'ECONNREFUSED' || error.code === '28P01') {
-      throw new Error('Database is not available. Please check your database connection.');
-    }
-    throw error;
-  }
 }
 
 // Register endpoint
@@ -41,11 +29,13 @@ router.post('/register', async (req: Request, res: Response) => {
     }
 
     // Check if user already exists
-    const existingUser = await withDatabase(async () => 
-      pool.query('SELECT id FROM users WHERE email = ?', [email])
-    );
+    const { data: existingUser, error: checkError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .single();
 
-    if (existingUser.rows.length > 0) {
+    if (existingUser) {
       return res.status(409).json({ 
         error: 'User already exists with this email' 
       });
@@ -55,21 +45,25 @@ router.post('/register', async (req: Request, res: Response) => {
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Insert new user (MySQL: no RETURNING) then fetch inserted row
-    const insertResult = await withDatabase(async () =>
-      pool.query(
-        `INSERT INTO users (first_name, last_name, email, password_hash, created_at) 
-         VALUES (?, ?, ?, ?, NOW())`,
-        [first_name, last_name, email, hashedPassword]
-      )
-    );
+    // Insert new user
+    const { data: user, error: insertError } = await supabase
+      .from('users')
+      .insert([{
+        first_name,
+        last_name,
+        email,
+        password_hash: hashedPassword
+      }])
+      .select('id, email, first_name, last_name, created_at')
+      .single();
 
-    const insertedId = insertResult.insertId;
-    const fetched = await withDatabase(async () =>
-      pool.query('SELECT id, email, first_name, last_name, created_at FROM users WHERE id = ?', [insertedId])
-    );
+    if (insertError) {
+      console.error('❌ Insert error:', insertError);
+      return res.status(500).json({ 
+        error: 'Failed to create user' 
+      });
+    }
 
-  const user = fetched.rows[0] as any;
     const token = createToken(user.id);
 
     console.log(`✅ User registered successfully: ${email}`);
@@ -87,13 +81,6 @@ router.post('/register', async (req: Request, res: Response) => {
 
   } catch (error: any) {
     console.error('❌ Registration error:', error);
-    
-    if (error.message.includes('Database is not available')) {
-      return res.status(503).json({ 
-        error: 'Service temporarily unavailable. Database connection failed.' 
-      });
-    }
-    
     res.status(500).json({ 
       error: 'Internal server error during registration' 
     });
@@ -115,21 +102,18 @@ router.post('/login', async (req: Request, res: Response) => {
     }
 
     // Find user by email
-    const result = await withDatabase(async () =>
-      pool.query(
-        'SELECT id, email, first_name, last_name, password_hash FROM users WHERE email = ?',
-        [email]
-      )
-    );
+    const { data: user, error: queryError } = await supabase
+      .from('users')
+      .select('id, email, first_name, last_name, password_hash')
+      .eq('email', email)
+      .single();
 
-    if (result.rows.length === 0) {
+    if (queryError || !user) {
       console.log(`❌ User not found: ${email}`);
       return res.status(401).json({ 
         error: 'Invalid email or password' 
       });
     }
-
-  const user = result.rows[0] as any;
 
     // Compare password
     const isMatch = await bcrypt.compare(password, user.password_hash);
@@ -159,13 +143,6 @@ router.post('/login', async (req: Request, res: Response) => {
 
   } catch (error: any) {
     console.error('❌ Login error:', error);
-    
-    if (error.message.includes('Database is not available')) {
-      return res.status(503).json({ 
-        error: 'Service temporarily unavailable. Database connection failed.' 
-      });
-    }
-    
     res.status(500).json({ 
       error: 'Internal server error during login' 
     });
@@ -177,28 +154,19 @@ router.get('/me', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
     
-    const result = await withDatabase(async () =>
-      pool.query(
-        `SELECT id, email, first_name, last_name, bio, institution, field_of_study, created_at 
-         FROM users WHERE id = ?`,
-        [userId]
-      )
-    );
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id, email, first_name, last_name, bio, institution, field_of_study, avatar, created_at')
+      .eq('id', userId)
+      .single();
 
-    if (result.rows.length === 0) {
+    if (error || !user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json(result.rows[0]);
+    res.json(user);
   } catch (error: any) {
     console.error('❌ Error fetching user profile:', error);
-    
-    if (error.message.includes('Database is not available')) {
-      return res.status(503).json({ 
-        error: 'Service temporarily unavailable. Database connection failed.' 
-      });
-    }
-    
     res.status(500).json({ error: 'Internal server error' });
   }
 });

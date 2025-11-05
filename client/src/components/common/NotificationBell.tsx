@@ -37,7 +37,8 @@ export default function NotificationBell() {
         setUnreadCount(data.count);
       }
     } catch (error) {
-      console.error('Error fetching unread count:', error);
+      // Silently fail - notifications endpoint not yet migrated
+      setUnreadCount(0);
     }
   };
 
@@ -59,7 +60,8 @@ export default function NotificationBell() {
         setNotifications(data);
       }
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      // Silently fail - notifications endpoint not yet migrated
+      setNotifications([]);
     } finally {
       setLoading(false);
     }
@@ -84,7 +86,7 @@ export default function NotificationBell() {
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      // Silently fail - notifications endpoint not yet migrated
     }
   };
 
@@ -105,7 +107,7 @@ export default function NotificationBell() {
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
       setUnreadCount(0);
     } catch (error) {
-      console.error('Error marking all as read:', error);
+      // Silently fail - notifications endpoint not yet migrated
     }
   };
 
@@ -174,7 +176,7 @@ export default function NotificationBell() {
         aria-label="Notifications"
       >
         <svg
-          className="w-6 h-6 text-gray-700 dark:text-gray-300"
+          className="w-6 h-6 text-foreground"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

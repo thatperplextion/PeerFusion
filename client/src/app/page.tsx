@@ -27,9 +27,9 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               href="/register"
-              className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-primary-foreground bg-primary rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-primary/25 min-w-[200px]"
+              className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-primary rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-primary/25 min-w-[200px]"
             >
-              <span className="relative z-10">Get Started Free</span>
+              <span className="relative z-10 text-white">Get Started Free</span>
               <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
@@ -210,22 +210,22 @@ export default function Home() {
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-20 -z-10" />
         
         <div className="max-w-4xl mx-auto text-center relative">
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white dark:text-white mb-6">
             Ready to Transform Your <br className="hidden sm:block" />Academic Journey?
           </h2>
-          <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-white dark:text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed">
             Join thousands of students and educators already collaborating on PeerFusion
           </p>
           <Link
             href="/register"
-            className="inline-flex items-center justify-center px-10 py-5 text-lg font-bold text-primary bg-white rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+            className="inline-flex items-center justify-center px-10 py-5 text-lg font-bold text-primary bg-white dark:bg-white rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl"
           >
-            Start Collaborating Today
-            <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <span className="text-primary">Start Collaborating Today</span>
+            <svg className="w-5 h-5 ml-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </Link>
-          <p className="mt-6 text-sm text-white/80">
+          <p className="mt-6 text-sm text-white dark:text-white/80">
             No credit card required • Free forever • 2 minute setup
           </p>
         </div>

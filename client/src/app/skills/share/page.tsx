@@ -140,8 +140,8 @@ export default function ShareSkillsPage() {
             Back to Skills
           </Link>
           
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Share Your Skills</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
+          <h1 className="text-3xl font-bold text-foreground">Share Your Skills</h1>
+          <p className="mt-2 text-muted-foreground">
             Let others know what you're good at and how you can help
           </p>
         </div>
@@ -160,10 +160,10 @@ export default function ShareSkillsPage() {
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-card rounded-lg shadow-md p-6 space-y-6">
           {/* Skill Name */}
           <div>
-            <label htmlFor="skillName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="skillName" className="block text-sm font-medium text-foreground mb-2">
               Skill Name <span className="text-red-500">*</span>
             </label>
             <input
@@ -173,14 +173,14 @@ export default function ShareSkillsPage() {
               value={formData.skillName}
               onChange={handleChange}
               placeholder="e.g., Python, Machine Learning, Research Writing"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground"
               required
             />
           </div>
 
           {/* Category */}
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="category" className="block text-sm font-medium text-foreground mb-2">
               Category <span className="text-red-500">*</span>
             </label>
             <select
@@ -188,7 +188,7 @@ export default function ShareSkillsPage() {
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground"
               required
             >
               <option value="">Select a category</option>
@@ -200,7 +200,7 @@ export default function ShareSkillsPage() {
 
           {/* Proficiency Level */}
           <div>
-            <label htmlFor="proficiencyLevel" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="proficiencyLevel" className="block text-sm font-medium text-foreground mb-2">
               Proficiency Level
             </label>
             <select
@@ -208,7 +208,7 @@ export default function ShareSkillsPage() {
               name="proficiencyLevel"
               value={formData.proficiencyLevel}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground"
             >
               <option value="beginner">Beginner</option>
               <option value="intermediate">Intermediate</option>
@@ -219,7 +219,7 @@ export default function ShareSkillsPage() {
 
           {/* Years of Experience */}
           <div>
-            <label htmlFor="yearsOfExperience" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="yearsOfExperience" className="block text-sm font-medium text-foreground mb-2">
               Years of Experience
             </label>
             <input
@@ -231,13 +231,13 @@ export default function ShareSkillsPage() {
               min="0"
               max="50"
               placeholder="e.g., 3"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2">
               Description
             </label>
             <textarea
@@ -247,7 +247,7 @@ export default function ShareSkillsPage() {
               onChange={handleChange}
               rows={4}
               placeholder="Describe your experience with this skill, projects you've worked on, or what you can help others with..."
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-card text-foreground"
             />
           </div>
 
@@ -262,9 +262,9 @@ export default function ShareSkillsPage() {
                 onChange={handleChange}
                 className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label htmlFor="willingToMentor" className="ml-3 text-sm text-gray-700 dark:text-gray-300">
+              <label htmlFor="willingToMentor" className="ml-3 text-sm text-foreground">
                 <span className="font-medium">Willing to mentor others</span>
-                <p className="text-gray-500 dark:text-gray-400">Help others learn this skill</p>
+                <p className="text-muted-foreground">Help others learn this skill</p>
               </label>
             </div>
 
@@ -277,9 +277,9 @@ export default function ShareSkillsPage() {
                 onChange={handleChange}
                 className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label htmlFor="willingToCollaborate" className="ml-3 text-sm text-gray-700 dark:text-gray-300">
+              <label htmlFor="willingToCollaborate" className="ml-3 text-sm text-foreground">
                 <span className="font-medium">Open to collaboration</span>
-                <p className="text-gray-500 dark:text-gray-400">Work with others on projects using this skill</p>
+                <p className="text-muted-foreground">Work with others on projects using this skill</p>
               </label>
             </div>
           </div>
@@ -289,7 +289,7 @@ export default function ShareSkillsPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="flex-1 px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors"
+              className="flex-1 px-6 py-3 border border-border text-foreground rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors"
             >
               Cancel
             </button>

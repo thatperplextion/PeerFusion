@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 :root {
   --background: 250 250 250;
@@ -23,25 +23,25 @@
 }
 
 .dark {
-  --background: 33 33 33;
-  --foreground: 236 236 241;
-  --card: 52 53 65;
-  --card-foreground: 236 236 241;
-  --primary: 16 163 127;
+  --background: 17 24 39;
+  --foreground: 243 244 246;
+  --card: 31 41 55;
+  --card-foreground: 243 244 246;
+  --primary: 16 185 129;
   --primary-foreground: 255 255 255;
-  --secondary: 86 88 105;
-  --secondary-foreground: 236 236 241;
-  --muted: 64 65 79;
-  --muted-foreground: 142 142 160;
-  --accent: 64 65 79;
-  --accent-foreground: 236 236 241;
-  --border: 64 65 79;
-  --input: 64 65 79;
-  --ring: 16 163 127;
+  --secondary: 75 85 99;
+  --secondary-foreground: 243 244 246;
+  --muted: 55 65 81;
+  --muted-foreground: 156 163 175;
+  --accent: 55 65 81;
+  --accent-foreground: 243 244 246;
+  --border: 75 85 99;
+  --input: 55 65 81;
+  --ring: 16 185 129;
   --destructive: 239 68 68;
-  --success: 16 163 127;
+  --success: 16 185 129;
   --warning: 251 191 36;
-  --info: 16 163 127;
+  --info: 16 185 129;
 }
 
 * {
@@ -404,4 +404,96 @@ a:hover {
 
 .animate-slide-in-right {
   animation: slide-in-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Utility classes for better text visibility */
+.text-foreground {
+  color: rgb(var(--foreground));
+}
+
+.text-muted-foreground {
+  color: rgb(var(--muted-foreground));
+}
+
+.text-card-foreground {
+  color: rgb(var(--card-foreground));
+}
+
+.text-primary {
+  color: rgb(var(--primary));
+}
+
+.text-destructive {
+  color: rgb(var(--destructive));
+}
+
+.bg-background {
+  background-color: rgb(var(--background));
+}
+
+.bg-card {
+  background-color: rgb(var(--card));
+}
+
+.bg-muted {
+  background-color: rgb(var(--muted));
+}
+
+.bg-accent {
+  background-color: rgb(var(--accent));
+}
+
+.bg-primary {
+  background-color: rgb(var(--primary));
+}
+
+.border-border {
+  border-color: rgb(var(--border));
+}
+
+/* Ensure inputs have proper contrast */
+input, textarea, select {
+  color: rgb(var(--foreground)) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgb(var(--muted-foreground)) !important;
+  opacity: 0.7;
+}
+
+/* Fix for select elements in dark mode */
+select option {
+  background-color: rgb(var(--card));
+  color: rgb(var(--foreground));
+}
+
+/* Prevent body scroll when modals/overlays are open */
+body.overflow-hidden {
+  overflow: hidden;
+}
+
+/* Improve heading visibility with subtle text shadow */
+h1, h2, h3 {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.dark h1, .dark h2, .dark h3 {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Ensure primary gradients are visible in light mode */
+.bg-gradient-to-br.from-primary {
+  background-image: linear-gradient(to bottom right, rgb(var(--primary)), rgba(var(--primary), 0.8));
+}
+
+.bg-gradient-to-r.from-primary {
+  background-image: linear-gradient(to right, rgb(var(--primary)), rgba(var(--primary), 0.7));
+}
+
+/* Make sure text on primary backgrounds is always white */
+.from-primary .text-white,
+.from-primary span {
+  color: white !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
