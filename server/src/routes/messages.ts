@@ -1,6 +1,7 @@
 // server/src/routes/messages.ts - Messaging API endpoints
 import { Router, Request, Response } from 'express';
 import { pool } from '../db';
+import { supabase } from '../supabase';
 import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
@@ -206,15 +207,17 @@ router.get('/unread/count', authenticateToken, async (req: Request, res: Respons
   try {
     const userId = (req as any).user.id;
     
-    const result = await pool.query(`
-      SELECT COUNT(*) as unread_count
-      FROM messages 
-      WHERE receiver_id = ? AND is_read = false AND sender_id != ?
-    `, [userId, userId]);
+    const { count, error } = await supabase
+      .from('messages')
+      .select('*', { count: 'exact', head: true })
+      .eq('receiver_id', userId)
+      .eq('is_read', false)
+      .neq('sender_id', userId);
 
-    const rr = (result.rows as any) || [];
-    res.json({ unreadCount: parseInt(rr[0].unread_count) });
-  } catch (error) {
+    if (error) throw error;
+
+    res.json({ unreadCount: count || 0 });
+  } catch (error: any) {
     console.error('❌ Error fetching unread count:', error);
     res.status(500).json({ error: 'Failed to fetch unread count' });
   }

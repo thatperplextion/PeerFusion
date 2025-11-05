@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { pool } from '../db';
+import { supabase } from '../supabase';
 import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
 
 // Create project
 router.post('/', authenticateToken, async (req, res) => {
-  const { title, description, link, status } = req.body;
+  const { title, description, status } = req.body;
   const userId = (req as any).user.id;
   
   // Validate required fields
@@ -14,21 +14,43 @@ router.post('/', authenticateToken, async (req, res) => {
     return res.status(400).json({ error: 'Title and description are required' });
   }
   
-  // Validate status if provided
-  const validStatuses = ['seeking', 'active', 'completed'];
-  const projectStatus = status && validStatuses.includes(status) ? status : 'seeking';
+  // Map frontend status to backend status
+  // Frontend: 'seeking', 'active', 'completed'
+  // Backend: 'planning', 'active', 'completed', 'on_hold'
+  let projectStatus = 'planning'; // default
+  if (status === 'seeking' || status === 'Seeking Collaborators') {
+    projectStatus = 'planning';
+  } else if (status === 'active' || status === 'Active') {
+    projectStatus = 'active';
+  } else if (status === 'completed' || status === 'Completed') {
+    projectStatus = 'completed';
+  }
   
   try {
-    const insertResult = await pool.query(
-      'INSERT INTO projects (user_id, title, description, link, status) VALUES (?, ?, ?, ?, ?)',
-      [userId, title, description, link || null, projectStatus]
-    );
-    const insertedId = insertResult.insertId;
-    const fetched = await pool.query('SELECT * FROM projects WHERE id = ?', [insertedId]);
-    res.status(201).json(fetched.rows[0]);
-  } catch (err) {
+    console.log('Creating project with data:', { creator_id: userId, title, description, status: projectStatus });
+    
+    const { data, error } = await supabase
+      .from('projects')
+      .insert({
+        creator_id: userId,
+        title,
+        description,
+        status: projectStatus
+      })
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
+    
+    console.log('Project created successfully:', data);
+    res.status(201).json(data);
+  } catch (err: any) {
     console.error('Error creating project:', err);
-    res.status(500).json({ error: 'Failed to add project' });
+    console.error('Error details:', JSON.stringify(err, null, 2));
+    res.status(500).json({ error: 'Failed to add project', details: err.message, code: err.code });
   }
 });
 
@@ -36,36 +58,63 @@ router.post('/', authenticateToken, async (req, res) => {
 router.get('/', authenticateToken, async (req, res) => {
   const userId = (req as any).user.id;
   try {
-    const result = await pool.query(
-      `SELECT p.*, u.first_name, u.last_name, 
-       CONCAT(u.first_name, ' ', u.last_name) as user_name 
-       FROM projects p 
-       JOIN users u ON p.user_id = u.id 
-       WHERE p.user_id = ?
-       ORDER BY p.created_at DESC`,
-      [userId]
-    );
-    res.json(result.rows);
-  } catch (err) {
+    const { data, error } = await supabase
+      .from('projects')
+      .select(`
+        *,
+        users:creator_id (
+          first_name,
+          last_name
+        )
+      `)
+      .eq('creator_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    
+    // Format response to match expected structure
+    const formatted = data.map((p: any) => ({
+      ...p,
+      first_name: p.users?.first_name,
+      last_name: p.users?.last_name,
+      user_name: `${p.users?.first_name || ''} ${p.users?.last_name || ''}`.trim()
+    }));
+    
+    res.json(formatted);
+  } catch (err: any) {
     console.error(err);
-    res.status(500).json({ error: 'Failed to fetch projects' });
+    res.status(500).json({ error: 'Failed to fetch projects', details: err.message });
   }
 });
 
 // Get all projects (for browsing)
 router.get('/all', authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT p.*, u.first_name, u.last_name, 
-       CONCAT(u.first_name, ' ', u.last_name) as user_name 
-       FROM projects p 
-       JOIN users u ON p.user_id = u.id 
-       ORDER BY p.created_at DESC`
-    );
-    res.json(result.rows);
-  } catch (err) {
+    const { data, error } = await supabase
+      .from('projects')
+      .select(`
+        *,
+        users:creator_id (
+          first_name,
+          last_name
+        )
+      `)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    
+    // Format response
+    const formatted = data.map((p: any) => ({
+      ...p,
+      first_name: p.users?.first_name,
+      last_name: p.users?.last_name,
+      user_name: `${p.users?.first_name || ''} ${p.users?.last_name || ''}`.trim()
+    }));
+    
+    res.json(formatted);
+  } catch (err: any) {
     console.error(err);
-    res.status(500).json({ error: 'Failed to fetch projects' });
+    res.status(500).json({ error: 'Failed to fetch projects', details: err.message });
   }
 });
 
@@ -74,21 +123,33 @@ router.get('/user/:userId', authenticateToken, async (req, res) => {
   const userId = req.params.userId;
   
   try {
-    const result = await pool.query(
-      `SELECT p.*, u.first_name, u.last_name, 
-       CONCAT(u.first_name, ' ', u.last_name) as user_name 
-       FROM projects p 
-       JOIN users u ON p.user_id = u.id 
-       WHERE p.user_id = ?
-       ORDER BY p.created_at DESC`,
-      [userId]
-    );
+    const { data, error } = await supabase
+      .from('projects')
+      .select(`
+        *,
+        users:creator_id (
+          first_name,
+          last_name
+        )
+      `)
+      .eq('creator_id', userId)
+      .order('created_at', { ascending: false });
     
-    console.log(`✅ Fetched ${result.rows.length} projects for user ${userId}`);
-    res.json(result.rows);
-  } catch (err) {
+    if (error) throw error;
+    
+    // Format response
+    const formatted = data.map((p: any) => ({
+      ...p,
+      first_name: p.users?.first_name,
+      last_name: p.users?.last_name,
+      user_name: `${p.users?.first_name || ''} ${p.users?.last_name || ''}`.trim()
+    }));
+    
+    console.log(`✅ Fetched ${formatted.length} projects for user ${userId}`);
+    res.json(formatted);
+  } catch (err: any) {
     console.error('Error fetching user projects:', err);
-    res.status(500).json({ error: 'Failed to fetch user projects' });
+    res.status(500).json({ error: 'Failed to fetch user projects', details: err.message });
   }
 });
 
@@ -97,23 +158,39 @@ router.get('/:id', authenticateToken, async (req, res) => {
   const projectId = req.params.id;
   
   try {
-    const result = await pool.query(
-      `SELECT p.*, u.first_name, u.last_name, u.id as author_id,
-       CONCAT(u.first_name, ' ', u.last_name) as user_name 
-       FROM projects p 
-       JOIN users u ON p.user_id = u.id 
-       WHERE p.id = ?`,
-      [projectId]
-    );
+    const { data, error } = await supabase
+      .from('projects')
+      .select(`
+        *,
+        users:creator_id (
+          id,
+          first_name,
+          last_name
+        )
+      `)
+      .eq('id', projectId)
+      .single();
     
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Project not found' });
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return res.status(404).json({ error: 'Project not found' });
+      }
+      throw error;
     }
     
-    res.json(result.rows[0]);
-  } catch (err) {
+    // Format response
+    const formatted = {
+      ...data,
+      author_id: data.users?.id,
+      first_name: data.users?.first_name,
+      last_name: data.users?.last_name,
+      user_name: `${data.users?.first_name || ''} ${data.users?.last_name || ''}`.trim()
+    };
+    
+    res.json(formatted);
+  } catch (err: any) {
     console.error('Error fetching project:', err);
-    res.status(500).json({ error: 'Failed to fetch project' });
+    res.status(500).json({ error: 'Failed to fetch project', details: err.message });
   }
 });
 

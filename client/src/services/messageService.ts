@@ -31,7 +31,7 @@ export const messageService = {
   // Get all conversations for the current user
   async getConversations(): Promise<Conversation[]> {
     try {
-      const response = await api.get('/messages/conversations');
+      const response = await api.get('/api/messages/conversations');
       return response.data;
     } catch (error) {
       // Return empty array if endpoint not available
@@ -42,7 +42,7 @@ export const messageService = {
   // Get chat history between two users
   async getChatHistory(userId: number): Promise<Message[]> {
     try {
-      const response = await api.get(`/messages/chat/${userId}`);
+      const response = await api.get(`/api/messages/chat/${userId}`);
       return response.data;
     } catch (error) {
       // Return empty array if endpoint not available
@@ -53,7 +53,7 @@ export const messageService = {
   // Send a message
   async sendMessage(receiverId: number, content: string, messageType: string = 'text'): Promise<Message | null> {
     try {
-      const response = await api.post('/messages/send', {
+      const response = await api.post('/api/messages/send', {
         receiverId,
         content,
         messageType
@@ -68,7 +68,7 @@ export const messageService = {
   // Mark messages as read
   async markAsRead(senderId: number): Promise<void> {
     try {
-      await api.put(`/messages/read/${senderId}`);
+      await api.put(`/api/messages/read/${senderId}`);
     } catch (error) {
       // Silently fail if endpoint not available
     }
@@ -77,7 +77,7 @@ export const messageService = {
   // Get unread message count
   async getUnreadCount(): Promise<{ unreadCount: number }> {
     try {
-      const response = await api.get('/messages/unread/count');
+      const response = await api.get('/api/messages/unread/count');
       return response.data;
     } catch (error) {
       // Return 0 if endpoint not available (not yet migrated)

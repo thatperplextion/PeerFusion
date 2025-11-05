@@ -13,7 +13,6 @@ export default function NewProjectPage() {
   const [project, setProject] = useState({
     title: "",
     description: "",
-    link: "",
     status: "seeking" as "seeking" | "active" | "completed"
   });
 
@@ -29,7 +28,11 @@ export default function NewProjectPage() {
     setError("");
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/projects`, {
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/api/projects`;
+      console.log('📡 Submitting to:', apiUrl);
+      console.log('📦 Project data:', project);
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,9 +41,18 @@ export default function NewProjectPage() {
         body: JSON.stringify(project)
       });
 
+      console.log('📨 Response status:', response.status);
+
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to create project');
+        const text = await response.text();
+        console.error('❌ Response text:', text);
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new Error(`Server error: ${response.status} - ${text}`);
+        }
+        throw new Error(data.error || data.details || 'Failed to create project');
       }
 
       const data = await response.json();
@@ -118,23 +130,6 @@ export default function NewProjectPage() {
               />
             </div>
 
-            {/* Link */}
-            <div>
-              <label htmlFor="link" className="block text-sm font-medium text-foreground mb-2">
-                Project Link (optional)
-              </label>
-              <input
-                type="url"
-                id="link"
-                value={project.link}
-                onChange={(e) => setProject({...project, link: e.target.value})}
-                placeholder="https://github.com/yourusername/project"
-                className="w-full px-4 py-3 border border-border rounded-lg bg-card text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <p className="mt-1 text-sm text-muted-foreground">
-                GitHub repo, paper, or project website
-              </p>
-            </div>
 
             {/* Status */}
             <div>
