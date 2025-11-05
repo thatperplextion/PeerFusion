@@ -67,7 +67,7 @@ export default function Header() {
             <Link href="/projects" className="text-muted-foreground hover:text-primary font-medium transition-colors">
               Projects
             </Link>
-            <Link href="/search" className="text-muted-foreground hover:text-primary font-medium transition-colors">
+            <Link href="/search" className="px-4 py-2 bg-muted/30 border border-muted-foreground/20 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 hover:border-muted-foreground/40 font-medium transition-all">
               Search
             </Link>
           </nav>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Post {
   id: number;
@@ -28,6 +29,31 @@ interface Comment {
   avatar?: string;
   created_at: string;
 }
+
+// Animation variants
+const postVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.4 }
+  },
+  exit: { 
+    opacity: 0, 
+    x: -100,
+    transition: { duration: 0.3 }
+  }
+};
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
 
 export default function FeedPage() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -214,12 +240,30 @@ export default function FeedPage() {
   }
 
   return (
-    <div className="min-h-screen py-8">
+    <motion.div 
+      className="min-h-screen py-8"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       <div className="max-w-3xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-foreground mb-8">Feed</h1>
+        <motion.h1 
+          className="text-3xl font-bold text-foreground mb-8"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          Feed
+        </motion.h1>
 
         {/* Create Post Card */}
-        <div className="glass-strong rounded-lg p-6 mb-6 border border-border">
+        <motion.div 
+          className="glass-strong rounded-lg p-6 mb-6 border border-border"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          whileHover={{ scale: 1.01 }}
+        >
           <div className="flex items-start space-x-3">
             <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
               {user?.first_name?.[0] || "U"}
@@ -232,22 +276,38 @@ export default function FeedPage() {
                 className="input w-full min-h-[100px] resize-none"
               />
               <div className="flex justify-end mt-3">
-                <button
+                <motion.button
                   onClick={createPost}
                   disabled={!newPost.trim()}
                   className="btn-primary disabled:opacity-50"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   Post
-                </button>
+                </motion.button>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Posts Feed */}
-        <div className="space-y-6">
-          {posts.map((post) => (
-            <div key={post.id} className="glass-strong rounded-lg border border-border overflow-hidden">
+        <AnimatePresence>
+          <motion.div className="space-y-6" variants={containerVariants}>
+            {posts.map((post, index) => (
+              <motion.div 
+                key={post.id} 
+                className="glass-strong rounded-lg border border-border overflow-hidden"
+                variants={postVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                layout
+                whileHover={{ 
+                  scale: 1.02,
+                  boxShadow: "0 10px 30px rgba(16, 163, 127, 0.2)"
+                }}
+                transition={{ delay: index * 0.1 }}
+              >
               {/* Post Header */}
               <div className="p-6">
                 <div className="flex items-start space-x-3 mb-4">
@@ -288,28 +348,41 @@ export default function FeedPage() {
 
                 {/* Action Buttons */}
                 <div className="flex items-center gap-2 border-t border-border/30 pt-3 mt-3">
-                  <button
+                  <motion.button
                     onClick={() => toggleLike(post.id, post.user_liked)}
                     className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-colors ${
                       post.user_liked
                         ? "text-primary bg-primary/10"
                         : "text-muted-foreground hover:bg-muted/30"
                     }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <svg className="w-5 h-5" fill={post.user_liked ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                    <motion.svg 
+                      className="w-5 h-5" 
+                      fill={post.user_liked ? "currentColor" : "none"} 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                      animate={{
+                        scale: post.user_liked ? [1, 1.2, 1] : 1,
+                      }}
+                      transition={{ duration: 0.3 }}
+                    >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
-                    </svg>
+                    </motion.svg>
                     Like
-                  </button>
-                  <button
+                  </motion.button>
+                  <motion.button
                     onClick={() => toggleComments(post.id)}
                     className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-muted-foreground hover:bg-muted/30 transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                     Comment
-                  </button>
+                  </motion.button>
                 </div>
 
                 {/* Comments Section */}
@@ -361,19 +434,25 @@ export default function FeedPage() {
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           ))}
 
           {posts.length === 0 && (
-            <div className="text-center py-12">
+            <motion.div 
+              className="text-center py-12"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
               <p className="text-muted-foreground text-lg">No posts yet</p>
               <p className="text-muted-foreground text-sm mt-2">
                 Be the first to share an update!
               </p>
-            </div>
+            </motion.div>
           )}
-        </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 }

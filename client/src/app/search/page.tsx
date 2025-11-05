@@ -84,28 +84,28 @@ export default function SearchPage() {
   };
 
   if (loading) return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
     </div>
   );
 
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             Search
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-muted-foreground">
             Find peers, projects, and collaborators
           </p>
         </div>
 
         {/* Search Bar */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
+        <div className="glass-strong rounded-lg p-6 mb-6 border border-border">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <input
@@ -114,7 +114,7 @@ export default function SearchPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="input w-full"
               />
             </div>
             
@@ -122,7 +122,7 @@ export default function SearchPage() {
               <select
                 value={searchType}
                 onChange={(e) => setSearchType(e.target.value as "users" | "projects")}
-                className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="input min-w-[120px]"
               >
                 <option value="users">Users</option>
                 <option value="projects">Projects</option>
@@ -131,7 +131,7 @@ export default function SearchPage() {
               <button
                 onClick={handleSearch}
                 disabled={searching || !searchQuery.trim()}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {searching ? "Searching..." : "Search"}
               </button>
@@ -143,31 +143,31 @@ export default function SearchPage() {
         {searchResults.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {searchResults.map((result) => (
-              <div key={result.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+              <div key={result.id} className="glass-strong rounded-lg p-6 border border-border hover:shadow-lg hover:border-primary/30 transition-all">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-r from-primary to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
                     <span className="text-white font-bold text-lg">
                       {result.first_name[0]}{result.last_name[0]}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <h3 className="text-lg font-semibold text-foreground">
                       {result.first_name} {result.last_name}
                     </h3>
                     {result.institution && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{result.institution}</p>
+                      <p className="text-sm text-muted-foreground">{result.institution}</p>
                     )}
                     {result.field_of_study && (
-                      <p className="text-sm text-gray-500 dark:text-gray-500">{result.field_of_study}</p>
+                      <p className="text-sm text-muted-foreground/80">{result.field_of_study}</p>
                     )}
                     {result.bio && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">{result.bio}</p>
+                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{result.bio}</p>
                     )}
                     <Link
                       href={`/profile/${result.id}`}
-                      className="mt-3 inline-block text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
+                      className="mt-3 inline-block px-4 py-2 bg-card border border-primary/30 text-primary rounded-lg hover:bg-primary/10 text-sm font-medium transition-all"
                     >
-                      View Profile →
+                      View Profile
                     </Link>
                   </div>
                 </div>
@@ -176,11 +176,11 @@ export default function SearchPage() {
           </div>
         ) : searchQuery && !searching ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400">No results found. Try a different search term.</p>
+            <p className="text-muted-foreground">No results found. Try a different search term.</p>
           </div>
         ) : !searchQuery ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400">Enter a search term to find users and projects</p>
+            <p className="text-muted-foreground">Enter a search term to find users and projects</p>
           </div>
         ) : null}
       </div>

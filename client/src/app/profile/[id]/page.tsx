@@ -1,9 +1,10 @@
-                                                                                                                                                                                                                            "use client";
+"use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface User {
   id: number;
@@ -72,6 +73,7 @@ interface UserStats {
 
 export default function ProfilePage() {
   const { id } = useParams();
+  const router = useRouter();
   const { user: currentUser, loading: authLoading } = useAuth();
   
   const [profile, setProfile] = useState<User | null>(null);
@@ -83,6 +85,35 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'skills' | 'publications' | 'projects'>('overview');
   const [connectionStatus, setConnectionStatus] = useState<{status: string, isRequester?: boolean, canAccept?: boolean}>({ status: 'none' });
   const [connectionLoading, setConnectionLoading] = useState(false);
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 }
+    }
+  };
+
+  const statsVariants = {
+    hidden: { scale: 0.8, opacity: 0 },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      transition: { duration: 0.4 }
+    }
+  };
 
   useEffect(() => {
     if (!id || authLoading || !currentUser) return;
@@ -222,49 +253,80 @@ export default function ProfilePage() {
     }
   };
 
+  const handleOpenChat = () => {
+    // Store the user ID in sessionStorage and navigate to dashboard where chat can be opened
+    if (profile) {
+      sessionStorage.setItem('openChatWith', profile.id.toString());
+      router.push('/dashboard');
+    }
+  };
+
   if (authLoading || loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+        </motion.div>
       </div>
     );
   }
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <motion.div 
+        className="min-h-screen bg-background flex items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Authentication Required</h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">Please log in to view profiles.</p>
-          <Link href="/login" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
+          <h1 className="text-2xl font-bold text-foreground mb-2">Authentication Required</h1>
+          <p className="text-muted-foreground mb-4">Please log in to view profiles.</p>
+          <Link href="/login" className="text-primary hover:text-primary/80 font-medium transition-colors">
             Go to Login
           </Link>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <motion.div 
+        className="min-h-screen bg-background flex items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Profile Not Found</h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">The profile you're looking for doesn't exist.</p>
-          <Link href="/dashboard" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
+          <h1 className="text-2xl font-bold text-foreground mb-2">Profile Not Found</h1>
+          <p className="text-muted-foreground mb-4">The profile you're looking for doesn't exist.</p>
+          <Link href="/dashboard" className="text-primary hover:text-primary/80 font-medium transition-colors">
             Return to Dashboard
           </Link>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   const isOwnProfile = currentUser.id === profile.id;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <motion.div 
+      className="min-h-screen bg-background py-8"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Profile Header */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
+        <motion.div 
+          className="glass-strong rounded-lg p-6 mb-6 border border-border"
+          variants={itemVariants}
+          whileHover={{ scale: 1.01 }}
+        >
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-4">
               {/* Avatar */}
@@ -371,12 +433,17 @@ export default function ProfilePage() {
                   </>
                 )}
                 
-                <Link href={`/messages?user=${id}`} className="btn-secondary flex items-center gap-2">
+                <motion.button
+                  onClick={handleOpenChat}
+                  className="btn-primary flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                   Message
-                </Link>
+                </motion.button>
               </div>
             )}
           </div>
@@ -416,36 +483,46 @@ export default function ProfilePage() {
               </a>
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* Stats Cards */}
         {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-              <div className="text-3xl font-bold text-blue-600">{stats.projects}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Projects</div>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-              <div className="text-3xl font-bold text-green-600">{stats.skills}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Skills</div>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-              <div className="text-3xl font-bold text-purple-600">{stats.endorsements}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Endorsements</div>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-              <div className="text-3xl font-bold text-orange-600">{stats.publications}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Publications</div>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-              <div className="text-3xl font-bold text-pink-600">{stats.profileViews}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Profile Views</div>
-            </div>
-          </div>
+          <motion.div 
+            className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6"
+            variants={containerVariants}
+          >
+            {[
+              { value: stats.projects, label: 'Projects', color: 'text-blue-600', icon: '📁' },
+              { value: stats.skills, label: 'Skills', color: 'text-green-600', icon: '⚡' },
+              { value: stats.endorsements, label: 'Endorsements', color: 'text-purple-600', icon: '👍' },
+              { value: stats.publications, label: 'Publications', color: 'text-orange-600', icon: '📄' },
+              { value: stats.profileViews, label: 'Profile Views', color: 'text-pink-600', icon: '👁' },
+            ].map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                className="glass-strong p-4 rounded-lg border border-border cursor-pointer"
+                variants={statsVariants}
+                whileHover={{ scale: 1.05, borderColor: 'rgb(16, 163, 127)' }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  if (stat.label === 'Projects') setActiveTab('projects');
+                  else if (stat.label === 'Skills') setActiveTab('skills');
+                  else if (stat.label === 'Publications') setActiveTab('publications');
+                }}
+              >
+                <div className="text-3xl mb-1">{stat.icon}</div>
+                <div className={`text-3xl font-bold ${stat.color}`}>{stat.value}</div>
+                <div className="text-sm text-muted-foreground">{stat.label}</div>
+              </motion.div>
+            ))}
+          </motion.div>
         )}
 
         {/* Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm mb-6">
+        <motion.div 
+          className="glass-strong rounded-lg mb-6 border border-border"
+          variants={itemVariants}
+        >
           <div className="border-b border-gray-200 dark:border-gray-700">
             <nav className="flex space-x-8 px-6" aria-label="Tabs">
               {['overview', 'skills', 'publications', 'projects'].map((tab) => (
@@ -601,13 +678,13 @@ export default function ProfilePage() {
 
             {/* Projects Tab - TODO: Fetch and display */}
             {activeTab === 'projects' && (
-              <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+              <div className="text-center text-muted-foreground py-8">
                 Projects section coming soon...
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

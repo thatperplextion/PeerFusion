@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 interface Project {
   id: number;
@@ -23,6 +24,28 @@ interface Activity {
   timestamp: string;
   user: string;
 }
+
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5
+    }
+  }
+};
 
 export default function Dashboard() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -99,10 +122,19 @@ export default function Dashboard() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-background">
+    <motion.div 
+      className="min-h-screen bg-background"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section with Animation */}
-        <div className="card mb-8 animate-fade-in hover:shadow-lg transition-smooth">
+        <motion.div 
+          className="card mb-8 animate-fade-in hover:shadow-lg transition-smooth"
+          variants={itemVariants}
+          whileHover={{ scale: 1.01 }}
+        >
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-foreground mb-2">
@@ -122,32 +154,38 @@ export default function Dashboard() {
               New Project
             </Link>
           </div>
-        </div>
+        </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content - Projects Feed */}
           <div className="lg:col-span-2 space-y-6">
             {/* Quick Actions */}
-            <div className="card animate-slide-in">
+            <motion.div 
+              className="card animate-slide-in"
+              variants={itemVariants}
+            >
               <h2 className="text-xl font-semibold text-foreground mb-4">Quick Actions</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Link
-                  href="/projects/new"
-                  className="flex items-center justify-center p-4 border-2 border-dashed border-border rounded-lg hover:border-primary hover:bg-muted transition-smooth group"
-                >
-                  <div className="text-center">
-                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:bg-primary/20 transition-smooth">
-                      <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link
+                    href="/projects/new"
+                    className="flex items-center justify-center p-4 border-2 border-dashed border-border rounded-lg hover:border-primary hover:bg-muted transition-smooth group"
+                  >
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:bg-primary/20 transition-smooth">
+                        <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                      </div>
+                      <span className="font-medium text-foreground group-hover:text-primary transition-smooth">Create Project</span>
                     </div>
-                    <span className="font-medium text-foreground group-hover:text-primary transition-smooth">Create Project</span>
-                  </div>
-                </Link>
-                <Link
-                  href="/skills/share"
-                  className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-green-400 dark:hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors group"
-                >
+                  </Link>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link
+                    href="/skills/share"
+                    className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-green-400 dark:hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors group"
+                  >
                   <div className="text-center">
                     <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:bg-green-200 dark:group-hover:bg-green-800/50 transition-colors">
                       <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -157,11 +195,16 @@ export default function Dashboard() {
                     <span className="font-medium text-gray-700 dark:text-gray-300 group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors duration-200">Share Skill</span>
                   </div>
                 </Link>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Recent Projects */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200">
+            <motion.div 
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200"
+              variants={itemVariants}
+              whileHover={{ scale: 1.01 }}
+            >
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white transition-colors duration-200">Recent Projects</h2>
                 <Link href="/projects" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors duration-200">
@@ -208,13 +251,16 @@ export default function Dashboard() {
                   </Link>
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <motion.div className="space-y-6" variants={itemVariants}>
             {/* Profile Summary */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200">
+            <motion.div 
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200"
+              whileHover={{ scale: 1.02 }}
+            >
               <div className="flex items-center space-x-3 mb-4">
                 <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                   <span className="text-white font-semibold text-lg">
@@ -232,10 +278,13 @@ export default function Dashboard() {
               >
                 View Profile
               </Link>
-            </div>
+            </motion.div>
 
             {/* Recent Activity */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200">
+            <motion.div 
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200"
+              whileHover={{ scale: 1.02 }}
+            >
               <h3 className="font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-200">Recent Activity</h3>
               {activities.length > 0 ? (
                 <div className="space-y-3">
@@ -254,10 +303,13 @@ export default function Dashboard() {
                   <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-200">No recent activity</p>
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* Skill Recommendations */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200">
+            <motion.div 
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200"
+              whileHover={{ scale: 1.02 }}
+            >
               <h3 className="font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-200">Recommended Skills</h3>
               <div className="space-y-2">
                 <Link href="/skills" className="block text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
@@ -267,10 +319,10 @@ export default function Dashboard() {
                   Share your expertise
                 </Link>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

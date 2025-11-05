@@ -32,7 +32,9 @@ export default function ChatButton() {
       const { unreadCount } = await messageService.getUnreadCount();
       setUnreadCount(unreadCount);
     } catch (error) {
-      console.error('Failed to load unread count:', error);
+      // Silently fail if the endpoint is not available
+      // This prevents console errors when backend is not running
+      setUnreadCount(0);
     }
   };
 

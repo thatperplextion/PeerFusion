@@ -23,7 +23,7 @@ export default function Chat({ onClose }: ChatProps) {
   const { user } = useAuth();
   const { socket, isConnected, sendMessage, sendTyping } = useSocket();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load conversations on mount
   useEffect(() => {
@@ -107,7 +107,7 @@ export default function Chat({ onClose }: ChatProps) {
       setMessages(prev => [...prev, message]);
       
       // Send via socket for real-time delivery
-      sendMessage(selectedConversation.other_user_id, message);
+      sendMessage(selectedConversation.other_user_id, message.content);
       
       // Clear input
       setNewMessage('');
@@ -219,7 +219,7 @@ export default function Chat({ onClose }: ChatProps) {
                 } else {
                   // Create a temporary self-conversation if none exists
                   const tempSelfConv = {
-                    id: `self_${user?.id}`,
+                    id: user?.id || 0,
                     other_user_id: user?.id || 0,
                     first_name: user?.first_name || '',
                     last_name: user?.last_name || '',
