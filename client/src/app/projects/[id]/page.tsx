@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { use, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -19,7 +19,8 @@ interface Project {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
 }
 
-export default function ProjectDetailsPage({ params }: { params: { id: string } }) {
+export default function ProjectDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const unwrappedParams = use(params);
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -35,7 +36,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
         }
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/projects/${params.id}`,
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/projects/${unwrappedParams.id}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -76,7 +77,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
     };
 
     fetchProject();
-  }, [params.id, router]);
+  }, [unwrappedParams.id, router]);
 
   if (loading) {
     return (

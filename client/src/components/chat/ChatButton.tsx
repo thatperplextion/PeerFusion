@@ -53,30 +53,34 @@ export default function ChatButton() {
         )}
       </button>
 
-      {/* Chat Modal */}
+      {/* Chat Side Panel */}
       {isOpen && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
-          onClick={() => setIsOpen(false)}
-        >
+        <>
+          {/* Backdrop */}
           <div 
-            className="w-full max-w-6xl h-[80vh] bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-200"
+            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsOpen(false)}
+          />
+          
+          {/* Side Panel */}
+          <div 
+            className="fixed right-0 top-0 bottom-0 w-full sm:w-[600px] md:w-[700px] lg:w-[800px] z-50 glass-strong shadow-2xl border-l border-border animate-slide-in-right flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 transition-colors duration-200">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white transition-colors duration-200">Chat</h2>
+            <div className="flex justify-between items-center p-4 border-b border-border/50 bg-card/50 flex-shrink-0">
+              <h2 className="text-lg font-semibold text-foreground">Messages</h2>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 text-foreground" />
               </button>
             </div>
-            <div className="h-full">
+            <div className="flex-1 overflow-hidden">
               <Chat onClose={() => setIsOpen(false)} />
             </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );

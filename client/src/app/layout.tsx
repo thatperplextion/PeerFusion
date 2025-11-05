@@ -2,6 +2,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import Header from "@/components/common/Header";
+import AnimatedBackground from "@/components/common/AnimatedBackground";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SocketProvider } from "@/contexts/SocketContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
@@ -22,6 +23,7 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <SocketProvider>
+              <AnimatedBackground />
               <div className="relative min-h-screen">
                 <Header />
                 <main className="w-full pt-16">{children}</main>
