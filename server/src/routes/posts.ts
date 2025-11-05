@@ -1,13 +1,20 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { pool } from '../db';
 import { authenticateToken } from '../middleware/authMiddleware';
+
+interface AuthRequest extends Request {
+  user?: {
+    userId: number;
+    email: string;
+  };
+}
 
 const router = Router();
 
 // Get feed posts
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user!.userId;
     
     // Get posts from user's connections and own posts
     const result = await pool.query(`
@@ -42,9 +49,9 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // Create a new post
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user!.userId;
     const { content, image_url, post_type } = req.body;
 
     if (!content || content.trim().length === 0) {
@@ -75,9 +82,9 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // Like a post
-router.post('/:postId/like', authenticateToken, async (req, res) => {
+router.post('/:postId/like', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user!.userId;
     const { postId } = req.params;
 
     await pool.query(
@@ -93,9 +100,9 @@ router.post('/:postId/like', authenticateToken, async (req, res) => {
 });
 
 // Unlike a post
-router.delete('/:postId/like', authenticateToken, async (req, res) => {
+router.delete('/:postId/like', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user!.userId;
     const { postId } = req.params;
 
     await pool.query(
@@ -111,7 +118,7 @@ router.delete('/:postId/like', authenticateToken, async (req, res) => {
 });
 
 // Get comments for a post
-router.get('/:postId/comments', authenticateToken, async (req, res) => {
+router.get('/:postId/comments', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const { postId } = req.params;
 
@@ -135,9 +142,9 @@ router.get('/:postId/comments', authenticateToken, async (req, res) => {
 });
 
 // Add a comment
-router.post('/:postId/comments', authenticateToken, async (req, res) => {
+router.post('/:postId/comments', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user!.userId;
     const { postId } = req.params;
     const { content } = req.body;
 
@@ -161,9 +168,9 @@ router.post('/:postId/comments', authenticateToken, async (req, res) => {
 });
 
 // Delete a post
-router.delete('/:postId', authenticateToken, async (req, res) => {
+router.delete('/:postId', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user!.userId;
     const { postId } = req.params;
 
     // Check if user owns the post
@@ -176,7 +183,7 @@ router.delete('/:postId', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Post not found' });
     }
 
-    if (checkResult.rows[0].user_id !== userId) {
+    if ((checkResult.rows[0] as any).user_id !== userId) {
       return res.status(403).json({ error: 'Not authorized to delete this post' });
     }
 
