@@ -16,10 +16,20 @@ import connectionsRoutes from './routes/connections';
 
 const app = express();
 const httpServer = createServer(app);
+// Allowed origins for CORS
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001', 
+  'http://localhost:3002',
+  'https://peerfusion-client.onrender.com', // Production frontend
+  process.env.FRONTEND_URL // Optional: set this in Render env vars
+].filter(Boolean);
+
 const io = new Server(httpServer, {
   cors: {
-    origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"],
-    methods: ["GET", "POST"]
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
@@ -32,7 +42,7 @@ app.use(express.json());
 
 // CORS (only once, with correct settings)
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'],
+  origin: allowedOrigins,
   credentials: true
 }));
 
