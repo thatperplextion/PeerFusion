@@ -81,6 +81,8 @@ export default function ProfilePage() {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'skills' | 'publications' | 'projects'>('overview');
+  const [connectionStatus, setConnectionStatus] = useState<{status: string, isRequester?: boolean, canAccept?: boolean}>({ status: 'none' });
+  const [connectionLoading, setConnectionLoading] = useState(false);
 
   useEffect(() => {
     if (!id || authLoading || !currentUser) return;
@@ -95,12 +97,14 @@ export default function ProfilePage() {
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/skills`, { headers: { Authorization: `Bearer ${token}` } }).then(res => res.json()),
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/publications`, { headers: { Authorization: `Bearer ${token}` } }).then(res => res.json()),
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/stats`, { headers: { Authorization: `Bearer ${token}` } }).then(res => res.json()),
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/connections/status/${id}`, { headers: { Authorization: `Bearer ${token}` } }).then(res => res.json()),
     ])
-    .then(([profileData, skillsData, publicationsData, statsData]) => {
+    .then(([profileData, skillsData, publicationsData, statsData, connectionData]) => {
       setProfile(profileData);
       setSkills(skillsData);
       setPublications(publicationsData);
       setStats(statsData);
+      setConnectionStatus(connectionData);
       setLoading(false);
     })
     .catch((error) => {
@@ -108,6 +112,86 @@ export default function ProfilePage() {
       setLoading(false);
     });
   }, [id, currentUser, authLoading]);
+
+  const handleSendConnectionRequest = async () => {
+    if (!id || connectionLoading) return;
+    setConnectionLoading(true);
+
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/connections/request/${id}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        setConnectionStatus({ status: 'pending', isRequester: true });
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to send connection request');
+      }
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+    } finally {
+      setConnectionLoading(false);
+    }
+  };
+
+  const handleAcceptConnection = async () => {
+    if (!connectionStatus.canAccept || connectionLoading) return;
+    setConnectionLoading(true);
+
+    const token = localStorage.getItem("token");
+    try {
+      // Need to get connection ID first - for now we'll refetch
+      const reqResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/connections/requests`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (reqResponse.ok) {
+        const requests = await reqResponse.json();
+        const matchingRequest = requests.find((r: any) => r.id === parseInt(id as string));
+        
+        if (matchingRequest) {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/connections/accept/${matchingRequest.connection_id}`, {
+            method: 'PUT',
+            headers: { Authorization: `Bearer ${token}` }
+          });
+
+          if (response.ok) {
+            setConnectionStatus({ status: 'accepted' });
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error accepting connection:', error);
+    } finally {
+      setConnectionLoading(false);
+    }
+  };
+
+  const handleRemoveConnection = async () => {
+    if (!id || connectionLoading) return;
+    if (!confirm('Are you sure you want to remove this connection?')) return;
+    
+    setConnectionLoading(true);
+
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/connections/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        setConnectionStatus({ status: 'none' });
+      }
+    } catch (error) {
+      console.error('Error removing connection:', error);
+    } finally {
+      setConnectionLoading(false);
+    }
+  };
 
   const handleEndorseSkill = async (skillId: number) => {
     const token = localStorage.getItem("token");
@@ -210,13 +294,90 @@ export default function ProfilePage() {
               </div>
             </div>
             
-            {isOwnProfile && (
+            {isOwnProfile ? (
               <Link
                 href="/profile/edit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity"
               >
                 Edit Profile
               </Link>
+            ) : (
+              <div className="flex gap-2">
+                {connectionStatus.status === 'none' && (
+                  <button
+                    onClick={handleSendConnectionRequest}
+                    disabled={connectionLoading}
+                    className="btn-primary flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                    Connect
+                  </button>
+                )}
+                
+                {connectionStatus.status === 'pending' && connectionStatus.isRequester && (
+                  <button
+                    disabled
+                    className="btn-secondary flex items-center gap-2 opacity-70 cursor-not-allowed"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Pending
+                  </button>
+                )}
+                
+                {connectionStatus.status === 'pending' && connectionStatus.canAccept && (
+                  <>
+                    <button
+                      onClick={handleAcceptConnection}
+                      disabled={connectionLoading}
+                      className="btn-primary flex items-center gap-2 disabled:opacity-50"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Accept
+                    </button>
+                    <button
+                      onClick={handleRemoveConnection}
+                      disabled={connectionLoading}
+                      className="btn-secondary flex items-center gap-2 disabled:opacity-50"
+                    >
+                      Decline
+                    </button>
+                  </>
+                )}
+                
+                {connectionStatus.status === 'accepted' && (
+                  <>
+                    <button className="btn-secondary flex items-center gap-2">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Connected
+                    </button>
+                    <button
+                      onClick={handleRemoveConnection}
+                      disabled={connectionLoading}
+                      className="btn-ghost text-destructive hover:bg-destructive/10"
+                      title="Remove connection"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </>
+                )}
+                
+                <Link href={`/messages?user=${id}`} className="btn-secondary flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  Message
+                </Link>
+              </div>
             )}
           </div>
 

@@ -58,14 +58,17 @@ export default function Header() {
             <Link href="/dashboard" className="text-muted-foreground hover:text-primary font-medium transition-colors">
               Dashboard
             </Link>
+            <Link href="/feed" className="text-muted-foreground hover:text-primary font-medium transition-colors">
+              Feed
+            </Link>
+            <Link href="/network" className="text-muted-foreground hover:text-primary font-medium transition-colors">
+              Network
+            </Link>
             <Link href="/projects" className="text-muted-foreground hover:text-primary font-medium transition-colors">
               Projects
             </Link>
             <Link href="/search" className="text-muted-foreground hover:text-primary font-medium transition-colors">
               Search
-            </Link>
-            <Link href="/skills" className="text-muted-foreground hover:text-primary font-medium transition-colors">
-              Skills
             </Link>
           </nav>
 
