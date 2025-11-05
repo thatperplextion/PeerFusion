@@ -26,7 +26,7 @@ export default function useAuth(redirectIfNoAuth: boolean = true) {
       return;
     }
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(async (res) => {

@@ -28,11 +28,52 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // TODO: Fetch actual projects from API
-    // For now, set empty array
-    setProjects([]);
-    setFilteredProjects([]);
-    setLoading(false);
+    const fetchProjects = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/projects`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Fetched projects:', data);
+          
+          // Transform backend data to match frontend interface
+          const transformedProjects = data.map((project: any) => ({
+            id: project.id,
+            title: project.title,
+            description: project.description,
+            author: project.user_name || 'Unknown',
+            authorId: project.user_id,
+            skills: [],
+            collaborators: 0,
+            maxCollaborators: 5,
+            createdAt: project.created_at,
+            status: project.status || 'seeking',
+            category: 'Research',
+            difficulty: 'intermediate' as const
+          }));
+          
+          setProjects(transformedProjects);
+          setFilteredProjects(transformedProjects);
+        }
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
   }, []);
 
   useEffect(() => {

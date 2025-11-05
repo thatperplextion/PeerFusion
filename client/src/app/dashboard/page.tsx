@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 interface Project {
   id: number;
@@ -23,72 +25,167 @@ interface Activity {
   user: string;
 }
 
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5
+    }
+  }
+};
+
 export default function Dashboard() {
-  const { user, loading } = useAuth();
+  const { user, loading, isAuthenticated } = useAuth();
+  const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
 
   useEffect(() => {
-    // TODO: Fetch actual projects and activities from API
-    // setProjects([]);
-    // setActivities([]);
-  }, []);
+    if (!loading && !isAuthenticated) {
+      router.push("/login");
+    }
+  }, [loading, isAuthenticated, router]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!isAuthenticated) return;
+      
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        // Fetch user's projects
+        const projectsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/projects`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (projectsResponse.ok) {
+          const projectsData = await projectsResponse.json();
+          console.log('Dashboard projects:', projectsData);
+          
+          // Transform backend data
+          const transformedProjects = projectsData.map((project: any) => ({
+            id: project.id,
+            title: project.title,
+            description: project.description,
+            author: project.user_name || `${project.first_name} ${project.last_name}` || 'You',
+            skills: [],
+            collaborators: 0,
+            createdAt: project.created_at,
+            status: project.status || 'seeking'
+          }));
+          
+          setProjects(transformedProjects);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchData();
+    }
+  }, [isAuthenticated]);
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
 
   if (loading) return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-    </div>
-  );
-
-  if (!user) return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-200">Authentication Required</h1>
-        <p className="text-gray-600 dark:text-gray-300 mb-4 transition-colors duration-200">Please log in to access your dashboard.</p>
-        <Link href="/login" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors duration-200">
-          Go to Login
-        </Link>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <div className="flex flex-col items-center gap-4">
+        <div className="spinner w-12 h-12 border-4"></div>
+        <p className="text-muted-foreground animate-pulse">Loading your dashboard...</p>
       </div>
     </div>
   );
 
+  if (!user) return null;
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <motion.div 
+      className="min-h-screen bg-background"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8 transition-colors duration-200">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-200">
-            Welcome back, {user.first_name}! 👋
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300 transition-colors duration-200">
-            Ready to collaborate on research and share your skills? Here's what's happening in your network.
-          </p>
-        </div>
+        {/* Welcome Section with Animation */}
+        <motion.div 
+          className="card mb-8 animate-fade-in hover:shadow-lg transition-smooth"
+          variants={itemVariants}
+          whileHover={{ scale: 1.01 }}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                {getGreeting()}, {user.first_name}! 👋
+              </h1>
+              <p className="text-muted-foreground">
+                Ready to collaborate on research and share your skills? Here's what's happening in your network.
+              </p>
+            </div>
+            <Link
+              href="/projects/new"
+              className="btn btn-primary hidden md:inline-flex"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              New Project
+            </Link>
+          </div>
+        </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content - Projects Feed */}
           <div className="lg:col-span-2 space-y-6">
             {/* Quick Actions */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-200">Quick Actions</h2>
+            <motion.div 
+              className="card animate-slide-in"
+              variants={itemVariants}
+            >
+              <h2 className="text-xl font-semibold text-foreground mb-4">Quick Actions</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Link
-                  href="/projects/new"
-                  className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors group"
-                >
-                  <div className="text-center">
-                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/50 transition-colors">
-                      <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link
+                    href="/projects/new"
+                    className="flex items-center justify-center p-4 border-2 border-dashed border-border rounded-lg hover:border-primary hover:bg-muted transition-smooth group"
+                  >
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:bg-primary/20 transition-smooth">
+                        <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                      </div>
+                      <span className="font-medium text-foreground group-hover:text-primary transition-smooth">Create Project</span>
                     </div>
-                    <span className="font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors duration-200">Create Project</span>
-                  </div>
-                </Link>
-                <Link
-                  href="/skills/share"
-                  className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-green-400 dark:hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors group"
-                >
+                  </Link>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link
+                    href="/skills/share"
+                    className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-green-400 dark:hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors group"
+                  >
                   <div className="text-center">
                     <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:bg-green-200 dark:group-hover:bg-green-800/50 transition-colors">
                       <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,11 +195,16 @@ export default function Dashboard() {
                     <span className="font-medium text-gray-700 dark:text-gray-300 group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors duration-200">Share Skill</span>
                   </div>
                 </Link>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Recent Projects */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200">
+            <motion.div 
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200"
+              variants={itemVariants}
+              whileHover={{ scale: 1.01 }}
+            >
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white transition-colors duration-200">Recent Projects</h2>
                 <Link href="/projects" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors duration-200">
@@ -149,13 +251,16 @@ export default function Dashboard() {
                   </Link>
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <motion.div className="space-y-6" variants={itemVariants}>
             {/* Profile Summary */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200">
+            <motion.div 
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200"
+              whileHover={{ scale: 1.02 }}
+            >
               <div className="flex items-center space-x-3 mb-4">
                 <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                   <span className="text-white font-semibold text-lg">
@@ -173,10 +278,13 @@ export default function Dashboard() {
               >
                 View Profile
               </Link>
-            </div>
+            </motion.div>
 
             {/* Recent Activity */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200">
+            <motion.div 
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200"
+              whileHover={{ scale: 1.02 }}
+            >
               <h3 className="font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-200">Recent Activity</h3>
               {activities.length > 0 ? (
                 <div className="space-y-3">
@@ -195,10 +303,13 @@ export default function Dashboard() {
                   <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-200">No recent activity</p>
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* Skill Recommendations */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200">
+            <motion.div 
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200"
+              whileHover={{ scale: 1.02 }}
+            >
               <h3 className="font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-200">Recommended Skills</h3>
               <div className="space-y-2">
                 <Link href="/skills" className="block text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
@@ -208,10 +319,10 @@ export default function Dashboard() {
                   Share your expertise
                 </Link>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

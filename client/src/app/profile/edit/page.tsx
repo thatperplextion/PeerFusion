@@ -57,7 +57,7 @@ export default function EditProfilePage() {
         return;
       }
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/api/users/profile`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5051'}/api/users/profile`, {
         method: "PUT",
         headers: { 
           "Content-Type": "application/json",

@@ -23,7 +23,7 @@ export default function Chat({ onClose }: ChatProps) {
   const { user } = useAuth();
   const { socket, isConnected, sendMessage, sendTyping } = useSocket();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load conversations on mount
   useEffect(() => {
@@ -107,7 +107,7 @@ export default function Chat({ onClose }: ChatProps) {
       setMessages(prev => [...prev, message]);
       
       // Send via socket for real-time delivery
-      sendMessage(selectedConversation.other_user_id, message);
+      sendMessage(selectedConversation.other_user_id, message.content);
       
       // Clear input
       setNewMessage('');
@@ -192,33 +192,25 @@ export default function Chat({ onClose }: ChatProps) {
   };
 
   if (!user) {
-    return <div className="p-4 text-center">Please log in to use chat</div>;
+    return <div className="p-4 text-center text-muted-foreground">Please log in to use chat</div>;
   }
 
   return (
-    <div className="flex h-full bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-200">
+    <div className="flex h-full overflow-hidden">
       {/* Conversations Sidebar */}
-      <div className="w-80 border-r border-gray-200 dark:border-gray-600 flex flex-col">
-        <div className="p-4 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
+      <div className="w-80 border-r border-border/50 flex flex-col bg-card/30">
+        <div className="p-4 border-b border-border/50">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center transition-colors duration-200">
+            <h2 className="text-lg font-semibold text-foreground flex items-center">
               <MessageCircle className="w-5 h-5 mr-2" />
-              Messages
+              Conversations
             </h2>
-            {onClose && (
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-            )}
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto">
           {/* Message Myself Button */}
-          <div className="p-4 border-b border-gray-100 dark:border-gray-600">
+          <div className="p-4 border-b border-border/30">
             <button
               onClick={() => {
                 const selfConversation = conversations.find(conv => conv.other_user_id === user?.id);
@@ -227,7 +219,7 @@ export default function Chat({ onClose }: ChatProps) {
                 } else {
                   // Create a temporary self-conversation if none exists
                   const tempSelfConv = {
-                    id: `self_${user?.id}`,
+                    id: user?.id || 0,
                     other_user_id: user?.id || 0,
                     first_name: user?.first_name || '',
                     last_name: user?.last_name || '',
@@ -241,54 +233,54 @@ export default function Chat({ onClose }: ChatProps) {
                   loadChatHistory(tempSelfConv);
                 }
               }}
-              className="w-full p-3 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 border border-green-200 dark:border-green-700 rounded-lg transition-colors text-left"
+              className="w-full p-3 glass hover:bg-primary/10 border border-primary/30 rounded-lg transition-all text-left"
             >
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-lg">
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-lg">
                   📝
                 </div>
                 <div>
-                  <p className="font-medium text-green-900 dark:text-green-100 transition-colors duration-200">Message Myself</p>
-                  <p className="text-sm text-green-600 dark:text-green-300 transition-colors duration-200">Send notes and reminders to yourself</p>
+                  <p className="font-medium text-foreground">Message Myself</p>
+                  <p className="text-sm text-muted-foreground">Send notes to yourself</p>
                 </div>
               </div>
             </button>
           </div>
 
           {loading ? (
-            <div className="p-4 text-center text-gray-500 dark:text-gray-400 transition-colors duration-200">Loading conversations...</div>
+            <div className="p-4 text-center text-muted-foreground">Loading conversations...</div>
           ) : conversations.length === 0 ? (
-            <div className="p-4 text-center text-gray-500 dark:text-gray-400 transition-colors duration-200">
-              <Users className="w-8 h-8 mx-auto mb-2 text-gray-400 dark:text-gray-500" />
+            <div className="p-4 text-center text-muted-foreground">
+              <Users className="w-8 h-8 mx-auto mb-2" />
               <p>No conversations yet</p>
-              <p className="text-sm">Use "Message Myself" above or start chatting with other users!</p>
+              <p className="text-sm">Start chatting with other users!</p>
             </div>
           ) : (
             conversations.map((conversation) => (
               <div
                 key={conversation.id}
                 onClick={() => loadChatHistory(conversation)}
-                className={`p-4 border-b border-gray-100 dark:border-gray-600 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors ${
-                  selectedConversation?.id === conversation.id ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700' : ''
+                className={`p-4 border-b border-border/30 cursor-pointer hover:bg-muted/30 transition-all ${
+                  selectedConversation?.id === conversation.id ? 'bg-primary/10 border-l-4 border-l-primary' : ''
                 }`}
               >
                 <div className="flex items-center space-x-3">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${
-                    isSelfConversation(conversation) ? 'bg-green-500' : 'bg-blue-500'
+                    isSelfConversation(conversation) ? 'bg-primary' : 'bg-secondary'
                   }`}>
                     {isSelfConversation(conversation) ? '📝' : conversation.first_name?.[0]}{!isSelfConversation(conversation) ? conversation.last_name?.[0] : ''}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 dark:text-white truncate transition-colors duration-200">
+                    <p className="font-medium text-foreground truncate">
                       {getDisplayName(conversation)}
                     </p>
                     {conversation.last_message_content && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate transition-colors duration-200">
+                      <p className="text-sm text-muted-foreground truncate">
                         {conversation.last_message_sender_id === user.id ? 'You: ' : ''}
                         {conversation.last_message_content}
                       </p>
                     )}
-                    <p className="text-xs text-gray-400 dark:text-gray-500 transition-colors duration-200">
+                    <p className="text-xs text-muted-foreground">
                       {conversation.last_message_at ? formatTime(conversation.last_message_at) : ''}
                     </p>
                   </div>
@@ -304,18 +296,18 @@ export default function Chat({ onClose }: ChatProps) {
         {selectedConversation ? (
           <>
             {/* Chat Header */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 transition-colors duration-200">
+            <div className="p-4 border-b border-border/50 bg-card/30">
               <div className="flex items-center space-x-3">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm ${
-                  isSelfConversation(selectedConversation) ? 'bg-green-500' : 'bg-blue-500'
+                  isSelfConversation(selectedConversation) ? 'bg-primary' : 'bg-secondary'
                 }`}>
                   {isSelfConversation(selectedConversation) ? '📝' : selectedConversation.first_name?.[0]}{!isSelfConversation(selectedConversation) ? selectedConversation.last_name?.[0] : ''}
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900 dark:text-white transition-colors duration-200">
+                  <h3 className="font-medium text-foreground">
                     {getDisplayName(selectedConversation)}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-200">
+                  <p className="text-sm text-muted-foreground">
                     {isSelfConversation(selectedConversation) ? 'Self Notes' : (isConnected ? 'Online' : 'Offline')}
                   </p>
                 </div>
@@ -323,7 +315,7 @@ export default function Chat({ onClose }: ChatProps) {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-background/30">
               {messages.map((message) => {
                 const isSelfMessage = message.sender_id === user.id;
                 const isSelfConversation = selectedConversation && selectedConversation.other_user_id === user?.id;
@@ -336,19 +328,15 @@ export default function Chat({ onClose }: ChatProps) {
                     <div
                       className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                         isSelfMessage
-                          ? isSelfConversation 
-                            ? 'bg-green-500 text-white' 
-                            : 'bg-blue-500 text-white'
-                          : 'bg-gray-200 text-gray-900'
+                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          : 'glass text-foreground border border-border/30'
                       }`}
                     >
                       <p className="text-sm">{message.content}</p>
                       <p className={`text-xs mt-1 ${
                         isSelfMessage 
-                          ? isSelfConversation 
-                            ? 'text-green-100' 
-                            : 'text-blue-100'
-                          : 'text-gray-500'
+                          ? 'text-primary-foreground/70'
+                          : 'text-muted-foreground'
                       }`}>
                         {formatTime(message.created_at)}
                       </p>
@@ -360,7 +348,7 @@ export default function Chat({ onClose }: ChatProps) {
               {/* Typing indicator */}
               {typingUsers.size > 0 && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-200 text-gray-900 px-4 py-2 rounded-lg">
+                  <div className="glass text-foreground px-4 py-2 rounded-lg border border-border/30">
                     <p className="text-sm italic">Typing...</p>
                   </div>
                 </div>
@@ -370,7 +358,7 @@ export default function Chat({ onClose }: ChatProps) {
             </div>
 
             {/* Message Input */}
-            <div className="p-4 border-t border-gray-200 dark:border-gray-600 transition-colors duration-200">
+            <div className="p-4 border-t border-border/50 bg-card/30">
               <div className="flex space-x-2">
                 <input
                   type="text"
@@ -378,13 +366,13 @@ export default function Chat({ onClose }: ChatProps) {
                   onChange={(e) => handleTyping(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                   placeholder="Type a message..."
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
+                  className="input flex-1"
                   disabled={loading}
                 />
                 <button
                   onClick={handleSendMessage}
                   disabled={!newMessage.trim() || loading}
-                  className="px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="btn-primary px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Send className="w-4 h-4" />
                 </button>
@@ -392,11 +380,11 @@ export default function Chat({ onClose }: ChatProps) {
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400 transition-colors duration-200">
+          <div className="flex-1 flex items-center justify-center text-muted-foreground">
             <div className="text-center">
-              <MessageCircle className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-500" />
-              <p className="text-lg font-medium transition-colors duration-200">Select a conversation</p>
-              <p className="text-sm transition-colors duration-200">Use "Message Myself" or choose a conversation from the sidebar to start chatting</p>
+              <MessageCircle className="w-16 h-16 mx-auto mb-4 opacity-30" />
+              <p className="text-lg font-medium">Select a conversation</p>
+              <p className="text-sm">Choose a conversation to start chatting</p>
             </div>
           </div>
         )}

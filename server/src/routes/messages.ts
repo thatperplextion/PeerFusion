@@ -11,7 +11,7 @@ router.get('/conversations', authenticateToken, async (req: Request, res: Respon
     const userId = (req as any).user.id;
     
     // First get regular conversations with other users
-    const regularConversations = await pool.query(`
+  const regularConversations = await pool.query(`
       SELECT 
         c.id,
         c.last_message_at,
@@ -19,7 +19,7 @@ router.get('/conversations', authenticateToken, async (req: Request, res: Respon
         m.content as last_message_content,
         m.sender_id as last_message_sender_id,
         CASE 
-          WHEN c.user1_id = $1 THEN c.user2_id
+          WHEN c.user1_id = ? THEN c.user2_id
           ELSE c.user1_id
         END as other_user_id,
         u.first_name,
@@ -29,38 +29,40 @@ router.get('/conversations', authenticateToken, async (req: Request, res: Respon
       FROM conversations c
       LEFT JOIN messages m ON m.id = c.last_message_id
       LEFT JOIN users u ON u.id = CASE 
-        WHEN c.user1_id = $1 THEN c.user2_id
+        WHEN c.user1_id = ? THEN c.user2_id
         ELSE c.user1_id
       END
-      WHERE c.user1_id = $1 OR c.user2_id = $1
+      WHERE c.user1_id = ? OR c.user2_id = ?
       ORDER BY c.last_message_at DESC
-    `, [userId]);
+    `, [userId, userId, userId, userId]);
 
-    // Then get self-conversations (messages sent to self)
-    const selfConversations = await pool.query(`
+  // Then get self-conversations (messages sent to self)
+  const selfConversations = await pool.query(`
       SELECT 
-        'self_' || $1 as id,
+        CONCAT('self_', ?) as id,
         MAX(m.created_at) as last_message_at,
         MAX(m.id) as last_message_id,
         MAX(m.content) as last_message_content,
         MAX(m.sender_id) as last_message_sender_id,
-        $1 as other_user_id,
+        ? as other_user_id,
         u.first_name,
         u.last_name,
         u.email,
         u.avatar
       FROM messages m
-      JOIN users u ON u.id = $1
-      WHERE (m.sender_id = $1 AND m.receiver_id = $1)
+      JOIN users u ON u.id = ?
+      WHERE (m.sender_id = ? AND m.receiver_id = ?)
       GROUP BY u.first_name, u.last_name, u.email, u.avatar
       HAVING COUNT(*) > 0
-    `, [userId]);
+    `, [userId, userId, userId, userId, userId]);
 
-    // Combine both results
-    const allConversations = [...regularConversations.rows, ...selfConversations.rows];
-    
-        // Sort by last message time
-    allConversations.sort((a, b) => {
+    // Combine both results (cast rows to any)
+    const regRows = (regularConversations.rows as any) || [];
+    const selfRows = (selfConversations.rows as any) || [];
+    const allConversations = [...regRows, ...selfRows];
+
+    // Sort by last message time
+    allConversations.sort((a: any, b: any) => {
       const timeA = a.last_message_at ? new Date(a.last_message_at).getTime() : 0;
       const timeB = b.last_message_at ? new Date(b.last_message_at).getTime() : 0;
       return timeB - timeA;
@@ -101,17 +103,17 @@ router.get('/chat/:userId', authenticateToken, async (req: Request, res: Respons
         u.avatar
       FROM messages m
       JOIN users u ON u.id = m.sender_id
-      WHERE (m.sender_id = $1 AND m.receiver_id = $2)
-         OR (m.sender_id = $2 AND m.receiver_id = $1)
+      WHERE (m.sender_id = ? AND m.receiver_id = ?)
+         OR (m.sender_id = ? AND m.receiver_id = ?)
       ORDER BY m.created_at ASC
-    `, [currentUserId, otherUserId]);
+    `, [currentUserId, otherUserId, otherUserId, currentUserId]);
 
     // Mark messages as read (except for self-messages to avoid infinite loop)
     if (!isSelfConversation) {
       await pool.query(`
         UPDATE messages 
         SET is_read = true 
-        WHERE sender_id = $1 AND receiver_id = $2 AND is_read = false
+        WHERE sender_id = ? AND receiver_id = ? AND is_read = false
       `, [otherUserId, currentUserId]);
     }
 
@@ -133,7 +135,7 @@ router.post('/send', authenticateToken, async (req: Request, res: Response) => {
     }
 
     // Verify receiver exists (allow self-messaging)
-    const userCheck = await pool.query('SELECT id FROM users WHERE id = $1', [receiverId]);
+    const userCheck = await pool.query('SELECT id FROM users WHERE id = ?', [receiverId]);
     if (userCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Receiver not found' });
     }
@@ -141,18 +143,25 @@ router.post('/send', authenticateToken, async (req: Request, res: Response) => {
     // Allow self-messaging - no need to check if sender and receiver are the same
 
     // Insert message
-    const result = await pool.query(`
+    const insertResult = await pool.query(`
       INSERT INTO messages (sender_id, receiver_id, content, message_type)
-      VALUES ($1, $2, $3, $4)
-      RETURNING id, sender_id, receiver_id, content, message_type, created_at
+      VALUES (?, ?, ?, ?)
     `, [senderId, receiverId, content, messageType]);
 
-    const message = result.rows[0];
+    const insertedId = insertResult.insertId;
+
+    // Fetch the inserted message
+    const fetched = await pool.query(`
+      SELECT id, sender_id, receiver_id, content, message_type, created_at
+      FROM messages WHERE id = ?
+    `, [insertedId]);
+
+    const message = fetched.rows[0] as any;
 
     // Get sender info for the response
     const senderInfo = await pool.query(`
       SELECT first_name, last_name, avatar 
-      FROM users WHERE id = $1
+      FROM users WHERE id = ?
     `, [senderId]);
 
     const messageWithSender = {
@@ -182,7 +191,7 @@ router.put('/read/:senderId', authenticateToken, async (req: Request, res: Respo
     await pool.query(`
       UPDATE messages 
       SET is_read = true 
-      WHERE sender_id = $1 AND receiver_id = $2 AND is_read = false
+      WHERE sender_id = ? AND receiver_id = ? AND is_read = false
     `, [senderId, receiverId]);
 
     res.json({ message: 'Messages marked as read' });
@@ -200,10 +209,11 @@ router.get('/unread/count', authenticateToken, async (req: Request, res: Respons
     const result = await pool.query(`
       SELECT COUNT(*) as unread_count
       FROM messages 
-      WHERE receiver_id = $1 AND is_read = false AND sender_id != $1
-    `, [userId]);
+      WHERE receiver_id = ? AND is_read = false AND sender_id != ?
+    `, [userId, userId]);
 
-    res.json({ unreadCount: parseInt(result.rows[0].unread_count) });
+    const rr = (result.rows as any) || [];
+    res.json({ unreadCount: parseInt(rr[0].unread_count) });
   } catch (error) {
     console.error('❌ Error fetching unread count:', error);
     res.status(500).json({ error: 'Failed to fetch unread count' });
