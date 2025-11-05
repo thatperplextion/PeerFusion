@@ -1,13 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../supabase';
-import { authenticateToken, AuthRequest } from '../middleware/authMiddleware';
+import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
 
 // Get feed posts
-router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
+router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = (req as any).user.id;
     
     // Get user's connections
     const { data: connections } = await supabase
@@ -76,9 +76,9 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
 });
 
 // Create a new post
-router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
+router.post('/', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = (req as any).user.id;
     const { content, image_url, post_type } = req.body;
 
     if (!content || content.trim().length === 0) {
@@ -123,9 +123,9 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
 });
 
 // Like a post
-router.post('/:postId/like', authenticateToken, async (req: AuthRequest, res: Response) => {
+router.post('/:postId/like', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = (req as any).user.id;
     const { postId } = req.params;
 
     const { error } = await supabase
@@ -145,9 +145,9 @@ router.post('/:postId/like', authenticateToken, async (req: AuthRequest, res: Re
 });
 
 // Unlike a post
-router.delete('/:postId/like', authenticateToken, async (req: AuthRequest, res: Response) => {
+router.delete('/:postId/like', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = (req as any).user.id;
     const { postId } = req.params;
 
     const { error } = await supabase
@@ -169,7 +169,7 @@ router.delete('/:postId/like', authenticateToken, async (req: AuthRequest, res: 
 });
 
 // Get comments for a post
-router.get('/:postId/comments', authenticateToken, async (req: AuthRequest, res: Response) => {
+router.get('/:postId/comments', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { postId } = req.params;
 
@@ -199,9 +199,9 @@ router.get('/:postId/comments', authenticateToken, async (req: AuthRequest, res:
 });
 
 // Add a comment
-router.post('/:postId/comments', authenticateToken, async (req: AuthRequest, res: Response) => {
+router.post('/:postId/comments', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = (req as any).user.id;
     const { postId } = req.params;
     const { content } = req.body;
 
@@ -235,9 +235,9 @@ router.post('/:postId/comments', authenticateToken, async (req: AuthRequest, res
 });
 
 // Delete a post
-router.delete('/:postId', authenticateToken, async (req: AuthRequest, res: Response) => {
+router.delete('/:postId', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = (req as any).user.id;
     const { postId } = req.params;
 
     // Check if user owns the post
