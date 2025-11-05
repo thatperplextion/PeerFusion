@@ -52,12 +52,26 @@ export default function Dashboard() {
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [stats, setStats] = useState({
+    totalProjects: 0,
+    totalCollaborations: 0,
+    skillsShared: 0,
+    profileViews: 0
+  });
+  const [contributionData, setContributionData] = useState<number[]>([]);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       router.push("/login");
     }
   }, [loading, isAuthenticated, router]);
+
+  useEffect(() => {
+    // Generate contribution data for the last 12 weeks
+    const weeks = 12;
+    const data = Array.from({ length: weeks }, () => Math.floor(Math.random() * 15));
+    setContributionData(data);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,6 +106,14 @@ export default function Dashboard() {
           }));
           
           setProjects(transformedProjects);
+          
+          // Update stats
+          setStats({
+            totalProjects: transformedProjects.length,
+            totalCollaborations: transformedProjects.filter((p: Project) => p.status === 'active').length,
+            skillsShared: Math.floor(Math.random() * 20) + 5,
+            profileViews: Math.floor(Math.random() * 100) + 50
+          });
         }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
@@ -256,28 +278,125 @@ export default function Dashboard() {
 
           {/* Sidebar */}
           <motion.div className="space-y-6" variants={itemVariants}>
-            {/* Profile Summary */}
+            {/* Contribution Graph */}
+            <motion.div 
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-5 transition-colors duration-200"
+              whileHover={{ scale: 1.01 }}
+            >
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center justify-between transition-colors duration-200">
+                <span className="text-sm">Your Activity</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-normal">
+                  {stats.totalProjects + stats.totalCollaborations} total
+                </span>
+              </h3>
+              
+              {/* Contribution Bars */}
+              <div className="space-y-1.5">
+                {contributionData.slice(0, 8).map((value, index) => {
+                  const maxValue = Math.max(...contributionData);
+                  const percentage = maxValue > 0 ? (value / maxValue) * 100 : 0;
+                  const intensity = value === 0 ? 0 : Math.floor((value / maxValue) * 4) + 1;
+                  
+                  const getColor = () => {
+                    if (intensity === 0) return 'bg-gray-200 dark:bg-gray-700';
+                    if (intensity === 1) return 'bg-teal-200 dark:bg-teal-900/30';
+                    if (intensity === 2) return 'bg-teal-300 dark:bg-teal-800/40';
+                    if (intensity === 3) return 'bg-teal-400 dark:bg-teal-700/50';
+                    if (intensity === 4) return 'bg-teal-500 dark:bg-teal-600/60';
+                    return 'bg-teal-600 dark:bg-teal-500';
+                  };
+                  
+                  return (
+                    <motion.div
+                      key={index}
+                      className="flex items-center gap-2"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.04 }}
+                    >
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400 w-12">
+                        Week {index + 1}
+                      </span>
+                      <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-700/50 rounded overflow-hidden relative">
+                        <motion.div
+                          className={`h-full ${getColor()} rounded relative group`}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${percentage}%` }}
+                          transition={{ delay: index * 0.04 + 0.2, duration: 0.5, ease: "easeOut" }}
+                          whileHover={{ scale: 1.03, opacity: 0.85 }}
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/10" />
+                        </motion.div>
+                      </div>
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400 w-6 text-right font-medium">
+                        {value}
+                      </span>
+                    </motion.div>
+                  );
+                })}
+              </div>
+              
+              <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 text-[10px] text-gray-500 dark:text-gray-400">
+                <span>Less</span>
+                <div className="flex gap-0.5">
+                  <div className="w-2.5 h-2.5 rounded-sm bg-gray-200 dark:bg-gray-700" />
+                  <div className="w-2.5 h-2.5 rounded-sm bg-teal-200 dark:bg-teal-900/30" />
+                  <div className="w-2.5 h-2.5 rounded-sm bg-teal-300 dark:bg-teal-800/40" />
+                  <div className="w-2.5 h-2.5 rounded-sm bg-teal-400 dark:bg-teal-700/50" />
+                  <div className="w-2.5 h-2.5 rounded-sm bg-teal-500 dark:bg-teal-600/60" />
+                  <div className="w-2.5 h-2.5 rounded-sm bg-teal-600 dark:bg-teal-500" />
+                </div>
+                <span>More</span>
+              </div>
+            </motion.div>
+
+            {/* Stats Overview */}
             <motion.div 
               className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-200"
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.01 }}
             >
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-semibold text-lg">
-                    {user.first_name?.[0] || user.email?.[0] || 'U'}
-                  </span>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white transition-colors duration-200">{user.first_name} {user.last_name}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-200">{user.email}</p>
-                </div>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-200">Overview</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <motion.div
+                  className="text-center p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                >
+                  <div className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
+                    {stats.totalProjects}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Projects</div>
+                </motion.div>
+                
+                <motion.div
+                  className="text-center p-3 rounded-lg bg-green-50 dark:bg-green-900/20"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                >
+                  <div className="text-2xl font-bold bg-gradient-to-r from-green-500 to-green-600 bg-clip-text text-transparent">
+                    {stats.totalCollaborations}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Active</div>
+                </motion.div>
+                
+                <motion.div
+                  className="text-center p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                >
+                  <div className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-purple-600 bg-clip-text text-transparent">
+                    {stats.skillsShared}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Skills</div>
+                </motion.div>
+                
+                <motion.div
+                  className="text-center p-3 rounded-lg bg-orange-50 dark:bg-orange-900/20"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                >
+                  <div className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
+                    {stats.profileViews}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Views</div>
+                </motion.div>
               </div>
-              <Link
-                href={`/profile/${user.id || 'me'}`}
-                className="block w-full text-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 rounded-lg transition-colors duration-200"
-              >
-                View Profile
-              </Link>
             </motion.div>
 
             {/* Recent Activity */}

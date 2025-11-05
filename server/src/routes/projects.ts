@@ -69,6 +69,29 @@ router.get('/all', authenticateToken, async (req, res) => {
   }
 });
 
+// Get projects by user ID (for viewing other users' profiles)
+router.get('/user/:userId', authenticateToken, async (req, res) => {
+  const userId = req.params.userId;
+  
+  try {
+    const result = await pool.query(
+      `SELECT p.*, u.first_name, u.last_name, 
+       CONCAT(u.first_name, ' ', u.last_name) as user_name 
+       FROM projects p 
+       JOIN users u ON p.user_id = u.id 
+       WHERE p.user_id = ?
+       ORDER BY p.created_at DESC`,
+      [userId]
+    );
+    
+    console.log(`✅ Fetched ${result.rows.length} projects for user ${userId}`);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching user projects:', err);
+    res.status(500).json({ error: 'Failed to fetch user projects' });
+  }
+});
+
 // Get single project by ID
 router.get('/:id', authenticateToken, async (req, res) => {
   const projectId = req.params.id;

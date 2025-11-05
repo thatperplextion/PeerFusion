@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 interface Project {
   id: number;
@@ -26,6 +27,35 @@ export default function ProjectsPage() {
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");
   const [loading, setLoading] = useState(true);
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 }
+    }
+  };
+
+  const projectCardVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.4 }
+    }
+  };
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -107,34 +137,53 @@ export default function ProjectsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <motion.div 
+      className="min-h-screen bg-background py-8"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <motion.div 
+          className="flex justify-between items-center mb-8"
+          variants={itemVariants}
+        >
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-200">Research Projects</h1>
-            <p className="text-gray-600 dark:text-gray-300 mt-2 transition-colors duration-200">Discover and collaborate on cutting-edge research projects</p>
+            <h1 className="text-3xl font-bold text-foreground">Research Projects</h1>
+            <p className="text-muted-foreground mt-2">Discover and collaborate on cutting-edge research projects</p>
           </div>
-          <Link
-            href="/projects/new"
-            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
-          >
-            Create Project
-          </Link>
-        </div>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Link
+              href="/projects/new"
+              className="btn-primary"
+            >
+              Create Project
+            </Link>
+          </motion.div>
+        </motion.div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8 transition-colors duration-200">
+        <motion.div 
+          className="glass-strong rounded-lg p-6 mb-8 border border-border"
+          variants={itemVariants}
+        >
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label htmlFor="search" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
+              <label htmlFor="search" className="block text-sm font-medium text-foreground mb-2">
                 Search
               </label>
               <input
@@ -143,19 +192,19 @@ export default function ProjectsPage() {
                 placeholder="Search projects..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
+                className="input w-full"
               />
             </div>
             
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
+              <label htmlFor="category" className="block text-sm font-medium text-foreground mb-2">
                 Category
               </label>
               <select
                 id="category"
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+                className="input w-full"
               >
                 <option value="all">All Categories</option>
                 {categories.map((category) => (
@@ -165,14 +214,14 @@ export default function ProjectsPage() {
             </div>
             
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
+              <label htmlFor="status" className="block text-sm font-medium text-foreground mb-2">
                 Status
               </label>
               <select
                 id="status"
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+                className="input w-full"
               >
                 <option value="all">All Statuses</option>
                 <option value="active">Active</option>
@@ -182,14 +231,14 @@ export default function ProjectsPage() {
             </div>
             
             <div>
-              <label htmlFor="difficulty" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
+              <label htmlFor="difficulty" className="block text-sm font-medium text-foreground mb-2">
                 Difficulty
               </label>
               <select
                 id="difficulty"
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+                className="input w-full"
               >
                 <option value="all">All Levels</option>
                 {difficulties.map((difficulty) => (
@@ -200,31 +249,38 @@ export default function ProjectsPage() {
               </select>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Projects Grid */}
         {filteredProjects.length > 0 ? (
           <div className="grid gap-6">
-            {filteredProjects.map((project) => (
-              <div key={project.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 p-6 hover:shadow-md transition-all duration-200">
+            {filteredProjects.map((project, index) => (
+              <motion.div 
+                key={project.id} 
+                className="glass-strong rounded-lg border border-border p-6 hover:shadow-lg"
+                variants={projectCardVariants}
+                whileHover={{ scale: 1.02, borderColor: 'rgb(16, 163, 127)' }}
+                whileTap={{ scale: 0.98 }}
+                custom={index}
+              >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 transition-colors duration-200">{project.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-300 mb-3 transition-colors duration-200">{project.description}</p>
+                    <h3 className="text-xl font-semibold text-foreground mb-2">{project.title}</h3>
+                    <p className="text-muted-foreground mb-3">{project.description}</p>
                   </div>
                   <div className="flex flex-col items-end space-y-2">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      project.status === 'active' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' :
-                      project.status === 'seeking' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' :
-                      'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                    } transition-colors duration-200`}>
+                      project.status === 'active' ? 'bg-green-500/20 text-green-400' :
+                      project.status === 'seeking' ? 'bg-yellow-500/20 text-yellow-400' :
+                      'bg-muted text-muted-foreground'
+                    }`}>
                       {project.status}
                     </span>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      project.difficulty === 'beginner' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' :
-                      project.difficulty === 'intermediate' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' :
-                      'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
-                    } transition-colors duration-200`}>
+                      project.difficulty === 'beginner' ? 'bg-blue-500/20 text-blue-400' :
+                      project.difficulty === 'intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
+                      'bg-red-500/20 text-red-400'
+                    }`}>
                       {project.difficulty}
                     </span>
                   </div>
@@ -232,60 +288,67 @@ export default function ProjectsPage() {
                 
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.skills.map((skill, index) => (
-                    <span key={index} className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs px-2 py-1 rounded transition-colors duration-200">
+                    <span key={index} className="bg-primary/20 text-primary text-xs px-2 py-1 rounded">
                       {skill}
                     </span>
                   ))}
                 </div>
                 
-                <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400 mb-4 transition-colors duration-200">
+                <div className="flex justify-between items-center text-sm text-muted-foreground mb-4">
                   <span>By {project.author}</span>
                   <span>{project.collaborators}/{project.maxCollaborators} collaborators</span>
-                  <span>{project.createdAt}</span>
+                  <span className="text-muted-foreground">{project.createdAt}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
                   <Link
                     href={`/projects/${project.id}`}
-                    className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors duration-200"
+                    className="text-primary hover:text-primary/80 font-medium transition-colors"
                   >
                     View Details
                   </Link>
                   <Link
                     href={`/profile/${project.authorId}`}
-                    className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 font-medium transition-colors duration-200"
+                    className="text-muted-foreground hover:text-foreground font-medium transition-colors"
                   >
                     View Author Profile
                   </Link>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <div className="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors duration-200">
-              <svg className="w-12 h-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <motion.div 
+            className="text-center py-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <div className="w-24 h-24 glass-strong rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-12 h-12 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 transition-colors duration-200">No projects found</h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6 transition-colors duration-200">
+            <h3 className="text-lg font-medium text-foreground mb-2">No projects found</h3>
+            <p className="text-muted-foreground mb-6">
               {projects.length === 0 
                 ? "Be the first to create a research project!" 
                 : "Try adjusting your filters to find more projects."
               }
             </p>
             {projects.length === 0 && (
-              <Link
-                href="/projects/new"
-                className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
-              >
-                Create Your First Project
-              </Link>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link
+                  href="/projects/new"
+                  className="btn-primary"
+                >
+                  Create Your First Project
+                </Link>
+              </motion.div>
             )}
-          </div>
+          </motion.div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
