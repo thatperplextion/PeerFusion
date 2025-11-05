@@ -1,20 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { pool } from '../db';
-import { authenticateToken } from '../middleware/authMiddleware';
-
-interface AuthRequest extends Request {
-  user?: {
-    userId: number;
-    email: string;
-  };
-}
+import { authenticateToken, AuthRequest } from '../middleware/authMiddleware';
 
 const router = Router();
 
 // Get feed posts
 router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.id;
     
     // Get posts from user's connections and own posts
     const result = await pool.query(`
@@ -23,7 +16,6 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
         u.first_name,
         u.last_name,
         u.avatar,
-        u.institution,
         (SELECT COUNT(*) FROM post_likes WHERE post_id = p.id) as like_count,
         (SELECT COUNT(*) FROM post_comments WHERE post_id = p.id) as comment_count,
         EXISTS(SELECT 1 FROM post_likes WHERE post_id = p.id AND user_id = ?) as user_liked
@@ -51,7 +43,7 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
 // Create a new post
 router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.id;
     const { content, image_url, post_type } = req.body;
 
     if (!content || content.trim().length === 0) {
@@ -84,7 +76,7 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
 // Like a post
 router.post('/:postId/like', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.id;
     const { postId } = req.params;
 
     await pool.query(
@@ -102,7 +94,7 @@ router.post('/:postId/like', authenticateToken, async (req: AuthRequest, res: Re
 // Unlike a post
 router.delete('/:postId/like', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.id;
     const { postId } = req.params;
 
     await pool.query(
@@ -144,7 +136,7 @@ router.get('/:postId/comments', authenticateToken, async (req: AuthRequest, res:
 // Add a comment
 router.post('/:postId/comments', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.id;
     const { postId } = req.params;
     const { content } = req.body;
 
@@ -170,7 +162,7 @@ router.post('/:postId/comments', authenticateToken, async (req: AuthRequest, res
 // Delete a post
 router.delete('/:postId', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user!.userId;
+    const userId = req.user!.id;
     const { postId } = req.params;
 
     // Check if user owns the post

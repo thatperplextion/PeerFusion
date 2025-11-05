@@ -34,20 +34,21 @@ export default function AnimatedBackground() {
       constructor() {
         this.x = Math.random() * (canvas?.width || window.innerWidth);
         this.y = Math.random() * (canvas?.height || window.innerHeight);
-        this.size = Math.random() * 100 + 50;
-        this.speedX = (Math.random() - 0.5) * 0.5;
-        this.speedY = (Math.random() - 0.5) * 0.5;
+        this.size = Math.random() * 150 + 80;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = (Math.random() - 0.5) * 0.3;
         
-        // Teal/green gradient colors
+        // Dark greyish and black gradient colors
         const colors = [
-          'rgba(16, 163, 127, 0.1)',   // Primary teal
-          'rgba(52, 211, 153, 0.08)',  // Light teal
-          'rgba(6, 182, 212, 0.09)',   // Cyan
-          'rgba(20, 184, 166, 0.07)',  // Teal-500
+          'rgba(40, 40, 40, 0.15)',    // Dark grey
+          'rgba(60, 60, 60, 0.12)',    // Medium grey
+          'rgba(30, 30, 35, 0.18)',    // Dark slate
+          'rgba(45, 45, 50, 0.14)',    // Charcoal
+          'rgba(25, 25, 30, 0.16)',    // Near black
         ];
         this.color = colors[Math.floor(Math.random() * colors.length)];
-        this.opacity = Math.random() * 0.5 + 0.2;
-        this.opacitySpeed = (Math.random() - 0.5) * 0.01;
+        this.opacity = Math.random() * 0.4 + 0.15;
+        this.opacitySpeed = (Math.random() - 0.5) * 0.008;
       }
 
       update() {
@@ -62,7 +63,7 @@ export default function AnimatedBackground() {
 
         // Pulsing opacity
         this.opacity += this.opacitySpeed;
-        if (this.opacity > 0.6 || this.opacity < 0.1) this.opacitySpeed *= -1;
+        if (this.opacity > 0.5 || this.opacity < 0.08) this.opacitySpeed *= -1;
       }
 
       draw() {
@@ -89,7 +90,7 @@ export default function AnimatedBackground() {
 
     // Create particles
     const particles: Particle[] = [];
-    const particleCount = 8;
+    const particleCount = 10;
 
     for (let i = 0; i < particleCount; i++) {
       particles.push(new Particle());
