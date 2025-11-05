@@ -21,7 +21,8 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001', 
   'http://localhost:3002',
-  'https://peerfusion-client.onrender.com', // Production frontend
+  'https://peerfusion.onrender.com', // Production frontend
+  'https://peerfusion-client.onrender.com', // Alternative frontend URL
   process.env.FRONTEND_URL // Optional: set this in Render env vars
 ].filter(Boolean);
 
