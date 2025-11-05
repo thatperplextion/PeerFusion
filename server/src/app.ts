@@ -28,14 +28,16 @@ const allowedOrigins = [
 
 const io = new Server(httpServer, {
   cors: {
-    origin: allowedOrigins,
-    methods: ["GET", "POST"],
+    origin: true, // Allow all origins temporarily
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true
   }
 });
 
 // Security + Logging
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 app.use(morgan('dev'));
 
 // JSON parsing
@@ -43,8 +45,10 @@ app.use(express.json());
 
 // CORS (only once, with correct settings)
 app.use(cors({
-  origin: allowedOrigins,
-  credentials: true
+  origin: true, // Allow all origins temporarily
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 // Test route
